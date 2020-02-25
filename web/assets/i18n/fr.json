@@ -1,0 +1,373 @@
+{
+   "APPICATION_STATE": {
+        "1": "L'application ne fonctionne pas",
+        "2": "L'application fonctionne"
+    },
+   "SELECT": "Changer la langue",
+   "time.by" : "créé par",
+   "TIMES":{
+        "agoPrefix":",",
+        "agoSuffix":"ago"
+    },
+    "COMMENT":{
+        "addComment":"Add Comment"
+    },
+	"PROCESSINSTANCE_STATE": {
+        "0": "PI est ouverte",
+        "3": "PI est créée",
+        "7": "PI est en cours d'exécution",
+        "8": "PI est fermée",
+        "10": "PI est erronée",
+        "11": "PI est annulée",
+        "12": "PI est suspendue"
+    },
+    "PROCESS_INSTANCE_FILTER":{
+        "AllActiveProcesses": "AllActiveProcesses",
+        "MyProcesses": "MyProcesses",
+        "AllProcesses": "AllProcesses",
+        "MyActiveProcesses": "MyActiveProcesses",
+        "AllInactiveProcesses": "AllInactiveProcesses",
+        "MyInactiveProcesses": "MyInactiveProcesses",
+        "AllProcessesInErrorState": "AllProcessesInErrorState"
+    } ,
+    "PI_TABLE" :{
+                "id": "Id",
+                "name": "prénom",
+                "instanceName": "Nom de l'instance",
+                "creationTime": "Temps de creation",
+                "created": "créé",
+                "priority": "Priorité",
+                "dueDate": "Date d'échéance"
+            },
+    "PD_TABLE" :{
+                "id": "Id",
+                "name": "prénom",
+                "state": "Etat",
+                "version": "Version",
+                "priority": "Priorité",
+                "owner": "Propriétaire",
+                "application": "Application"
+            },
+    "WI_TABLE" :{
+                "id": "Id",
+                "name": "prénom",
+                "instanceName": "Nom de l'instance",
+                "creationTime": "Temps de creation",
+                "created": "créé",
+                "priority": "Priorité",
+                "dueDate": "Date d'échéance"
+            },
+    "PRIORITY": {
+           "undefined": "Indéfini",
+           "low": "Faible",
+           "medium": "Moyen",
+           "high": "Haute"
+      },
+    "WORK_ITEM_STATE": {
+        "0":"Ouvert",
+        "3":"Actif",
+        "4":"Déactive",
+        "6":"En baisse",
+        "8":"Accepté",
+        "12":"Attendre SubProcess",
+        "14":"Suspendu",
+        "15":"Lis",
+        "16":"Voté",
+        "25":"Avenir",
+        "-1":"Terminé"
+    },
+    "CREATION_DATE": "Date de création",
+    "CLOSED_DATE": "Date de fermeture",
+    "DUE_DATE": "Date d'échéance",
+    "PRIORITY_DD": "Priorité",
+    "NAME": "prénom",
+    "INSTANCE_NAME": "Nom de l'instance",
+    "STATE": "Etat",
+    "WORK_ITEM_FILTER":{
+        "myCurrentWorkItems": "MyCurrentWorkItems",
+        "myWorkItems": "MyWorkItems",
+        "myActiveWorkItems": "MyActiveWorkItems",
+        "myAcceptedWorkItems": "MyAcceptedWorkItems",
+        "myDeclinedWorkItems": "MyDeclinedWorkItems",
+        "allWorkItems": "AllWorkItems",
+        "allInactiveWorkItems": "AllInactiveWorkItems"
+    },
+    "NODEINSTANCE_STATE": {
+        "0": "Pas commencé",
+        "3": "Attribué",
+        "4": "Attendre",
+        "5": "Fermé",
+        "6": "Avorté",
+        "10": "Erreur",
+        "11": "Suspendu"
+    },
+    "BPM":{
+        "accept": "Acceptez",
+        "decline": "Déclin",
+        "reassign": "Réaffecter",
+        "addSubTask": "Ajouter une sous-tâche",
+        "id": "Id",
+        "plan": "Plan",
+        "version": "Version",
+        "owner": "Propriétaire",
+        "initiator":"Initiateur BPM",
+        "suspend": "Suspendre",
+        "resume": "Reprendre",
+        "abort": "Abandonner",
+        "task":"Tâche",
+        "taskName":"Tâche prénom"
+    },
+    "DIRECTORY":{
+        "groups": "Groupes",
+        "users": "Utilisateurs",
+        "filterGroups": "Groupes de filtrage",
+        "filterUsers": "Utilisateurs de filtre",
+        "selected": "Choisi"
+    },
+    "PROCESS_DEFINITION_FILTER":{
+        "allPlans": "Tous les plans",
+        "myPlans": "Mes plans"
+    },
+    "PROCESS_DEFINITION_STATE": {
+        "0":"Brouillon",
+        "1":"Publié",
+        "2":"Privé",
+        "3":"Obsolète",
+        "4":"Supprimé"
+    },
+    "TIME":{
+        "day": "journée",
+        "days": "journées",
+        "hour": "heure",
+        "hours": "heures",
+        "minute": "minute",
+        "minutes": "minutes"
+    },
+    "PROCESS_ACTIONS": "Actions de processus",
+    "TASK_ACTIONS": "Actions de tâche",
+    "CREATE_INSTANCE_LABLE": {
+        "plan": "Plan",
+        "version": "Version",
+        "udaList": "Liste UDA"
+    },
+    "dashboard": {
+        "addKPI": "(fr)Add KPI",
+        "addNew": "(fr)Add chart",
+        "addPopupLink": "(fr)Add popup link",
+        "applyBtn": "(fr)Apply",
+        "cancelBtn": "Annuler",
+        "createNew": "(fr)Create new",
+        "dasboardMaxCountMsg": "(fr)Maximum '{{dasboardMaxCountTran}}' Dashboard can be created in '{{appNameTran}}' application !",
+        "dateRange": "(fr)Date range",
+        "deleteBtn": "(fr)Delete",
+        "deleteDashboardConfirmation": "(fr)Do you want to delete '{{dashboardNameTran}}' dashboard ? ",
+        "lastDashboardDeleteMsg": "(fr)Atleast one Dashboard should be active !",
+        "maxBottomCountMsg": "(fr)Maximum '{{maxBottomCountTran}}' Chart Links can be added in a Dashboard !",
+        "modify": "(fr)Modify",
+        "modifySearch": "(fr)Modify Search",
+        "noResultFound": "(fr)No Result Found !!!",
+        "pdf": {
+          "applicationName": "(fr)Application",
+          "dateRange": "(fr)Date Range",
+          "generatedBy": "(fr)Report generated by Fujitsu Digital Transformation Platform",
+          "generatedOn": "(fr)Generated on ",
+          "tenantName": "(fr)Tenant"
+        },
+        "refreshInterval": "(fr)Refresh Interval",
+        "refreshIntervalValues" : {
+          "Off": "(fr)Off",
+          "5 Seconds": "(fr)5 Seconds",
+          "10 Seconds": "(fr)10 Seconds",
+          "30 Seconds": "(fr)30 Seconds",
+          "45 Seconds": "(fr)45 Seconds",
+          "1 Minute": "(fr)1 Minute",
+          "15 Minutes": "(fr)15 Minutes",
+          "30 Minutes": "(fr)30 Minutes"
+        },
+        "saveBtn": "(fr)Save",
+        "saveChangesConfirmation": "(fr)Do you want to save the changes ? ",
+        "saveDashboard": "(fr)Do you want to save dasboards ?",
+        "searchQuery": "(fr)Search query",
+        "selectPanel": "(fr)Select Panel",
+        "sidebarNavigation": "(fr)Sidebar Navigation",
+        "turnoffAutoRefreshBeforeDashboardEdit": "(fr)Please turn off auto refresh before edit dashboard !"
+      },
+      "processInstance": {
+        "activitiesAndStates": "(fr)Activities and States",
+        "hideGraph": "(fr)Hide Graph",
+        "history": "(fr)History",
+        "processInstanceId": "(fr)Process Instance Id",
+        "processes": "(fr)Processes",
+        "responsible": "(fr)Responsible",
+        "showGraph": "(fr)Show Graph"
+      },
+      "comments": {
+        "Comment": "Commentaire",
+        "Comments": "Commentaires",
+        "addComment": "Ajouter un commentaire"
+      },
+      "pup": {
+        "accept": "Accepter",
+        "addSubTask": "Nouveau sous tâche",
+        "decline": "Décliner",
+        "id": "id",
+        "initiator": "Initiator",
+        "instance": "Cas",
+        "instanceName": "(*)Process name",
+        "instances": "Cas",
+        "owner": "Owner",
+        "plan": "Plan",
+        "plans": "Plans",
+        "reassign": "Réassigner",
+        "reassignTask": "Réassigner tâche",
+        "subTask": "Sous tâche",
+        "subTasks": "Sous tâches",
+        "task": "Tâche",
+        "taskName": "Tâches nom",
+        "version": "Version"
+      },
+      "esDownMsg": "(fr)Unable to display process graphic.",
+      "navBar": {
+        "DXPMonitor": "(fr)DXP Monitor",
+        "dashboard": "(fr)Dashboard",
+        "home": "(fr)Home",
+        "newProcess": "(fr)New Process",
+        "processes": "(fr)Processes",
+        "tasks": "(fr)Tasks"
+      },"home": {
+        "bpm": "(fr)Fujitsu DXP",
+        "dashboardButton": "(fr)Dashboard",
+        "dashboardHeading": "(fr)Dashboard",
+        "dashboardText": "(fr)Fast path to Key Indicators",
+        "intro": "(fr)Fujitsu DXP is your comprehensive solution for Business Process and Case Management.",
+        "newProcess": "(fr)If you just deployed your application, start here to create a new process. It gives you the list of process definitions.",
+        "newProcessButton": "(fr)Start",
+        "newProcessHeading": "(fr)Start a Process",
+        "processButton": "(fr)Processes",
+        "processHeading": "(fr)Track Processes",
+        "processText": "(fr)Track and manage your processes.",
+        "taskButton": "(fr)Tasks",
+        "taskHeading": "(fr)Task List",
+        "taskText": "(fr)Each user has a personal work list where they can manage their tasks."
+      },
+      "error": {
+        "problem": "(fr)Problem:",
+        "showTraceDetails": "(fr)Show Trace Details",
+        "trace": "(fr)Trace:"
+      },
+      "udaFilter":{
+      "UDAName": "(fr)UDA Name",
+      "type": "(fr)Type",
+      "operator":"(fr)Operator",
+      "value":"(fr)Value",
+      "filter":"(fr)Filter",
+      "clear":"(fr)Clear",
+      "addUda":"(fr)Add UDA",
+      "addUdaSorting":"(fr)Add UDA Sorting",
+      "addCreationDate":"(fr)Add Creation date",
+      "addState":"(fr)Add State",
+      "creationDate":"(fr)Creation Date",
+      "state":"(fr)State",
+      "showFilter":"(fr)Show Filter",
+      "addpds":"(fr)Add PD",
+      "processDefinition":"(fr)Process Definition"
+      },
+      "processInstanceState": {
+        "1": "Actif",
+        "10": "Erreur",
+        "11": "Interrompu",
+        "12": "Suspendu",
+        "2": "Fermé",
+        "7": "Actif",
+        "8": "Complété",
+        "state": "(*)State"
+      },
+      "kpiLabels": {
+        "0": "(fr)Running Process Instance",
+        "1": "(fr)Closed Process Instance",
+        "2": "(fr)My Active  Task",
+        "3": "(fr)My Closed Task",
+        "4": "(fr)Active Overdue Task",
+        "5": "(fr)All Active Task",
+        "6": "(fr)All Closed Task"
+      },
+      "days": {
+        "Fr": "Ve",
+        "Mo": "Lu",
+        "Sa": "Sa",
+        "Su": "Di",
+        "Th": "Je",
+        "Tu": "Ma",
+        "We": "Me"
+      },
+      "month": {
+        "Apr": "avr",
+        "Aug": "aoû",
+        "Dec": "déc",
+        "Feb": "fév",
+        "Jan": "jan",
+        "Jul": "juil",
+        "Jun": "jui",
+        "Mar": "mar",
+        "May": "mai",
+        "Nov": "nov",
+        "Oct": "oct",
+        "Sep": "sep"
+      },
+      "dateRange": {
+        "custom": "(fr)Custom",
+        "lastMonth": "(fr)Last 30 days",
+        "lastWeek": "(fr)Last 7 days",
+        "yesterday": "(fr)Yesterday"
+      },
+      "charts": {
+        "Activity Lead Time In Closed Processes": "(fr)Activity Lead Time In Closed Processes",
+        "Activity Lead Time In Running Processes": "(fr)Activity Lead Time In Running Processes",
+        "All Running Process Lead Time": "(fr)All Running Process Lead Time",
+        "All Running and Closed Process Lead Time": "(fr)All Running and Closed Process Lead Time",
+        "All running processes within the time period": "(fr)All running processes within the time period",
+        "Average Processing Time Per Route": "(fr)Average Processing Time Per Route",
+        "Average Running Time For All Running Processes": "(fr)Average Running Time For All Running Processes",
+        "Average of Closed Activity Completion Time": "(fr)Average of Closed Activity Completion Time",
+        "Average of Running Activity Lead Time": "(fr)Average of Running Activity Lead Time",
+        "Closed And Running Processes Per Day": "(fr)Closed And Running Processes Per Day",
+        "Closed Process Completion Lead Time": "(fr)Closed Process Completion Lead Time",
+        "Custom Chart": "(fr)Custom Chart",
+        "Download CSV": "(fr)Download CSV",
+        "Download PDF": "(fr)Download PDF",
+        "No Data Available": "(fr)No Data Available",
+        "Number Of Activities By Name": "(fr)Number Of Activities By Name",
+        "Number Of Activities Closed By Date": "(fr)Number Of Activities Closed By Date",
+        "Number Of Activities Created By Date": "(fr)Number Of Activities Created By Date",
+        "Number Of Closed Processes By Day": "(fr)Number Of Closed Processes By Day",
+        "Number Of Running Processes By Day": "(fr)Number Of Running Processes By Day",
+        "Number of Finished Tasks From Each Person": "(fr)Number of Finished Tasks From Each Person",
+        "Number of Running Tasks Each Person Owns": "(fr)Number of Running Tasks Each Person Owns",
+        "Open And Closed Activities Running Time": "(fr)Open And Closed Activities Running Time",
+        "Opened Processes By Hour": "(fr)Opened Processes By Hour",
+        "Opened and Closed Processes By Day": "(fr)Opened and Closed Processes By Day",
+        "Opened and Closed Processes By Hour": "(fr)Opened and Closed Processes By Hour",
+        "Percentage by Process State": "(fr)Percentage by Process State",
+        "Percentage of Processes by Plan Name": "(fr)Percentage of Processes by Plan Name",
+        "Running Work Item Lead Time Per Person": "(fr)Running Work Item Lead Time Per Person",
+        "Running Work Items By Plan": "(fr)Running Work Items By Plan",
+        "Show Data Table": "(fr)Show Data Table",
+        "Standard Chart": "(fr)Standard Chart"
+      },
+      "timeout": {
+        "ContinueSession": "Continuer la session",
+        "Login": "Continuer",
+        "SessionTimeOut": "Expiration de la session",
+        "Togetback": "Pour revenir à ce que vous faisiez:",
+        "inactivityMsg": "Pour la sécurité, nous déconnectons l'utilisateur après 30 minutes d'inactivité..",
+        "sessionexpirein": "Votre session expirera dans "
+      },
+      "errorDetails": "Détails de l'erreur:",
+      "pagination": {
+        "display": "(fr)Display",
+        "first": "(fr)First",
+        "last": "(fr)Last",
+        "next": "(fr)Next",
+        "previous": "(fr)Previous"
+      }
+}

@@ -1,0 +1,64 @@
+{
+  "servers": [
+    {
+      "id": "ora0",
+      "url": "http://scale0.interstagebpm.com/ora0/aa",
+      "tenant": "StressTest",
+      "app": "RandomWalk"
+    },
+    {
+      "id": "ora1",
+      "url": "http://scale0.interstagebpm.com/ora1/aa",
+      "tenant": "StressTest",
+      "app": "RandomWalk"
+    },
+    {
+      "id": "ora2",
+      "url": "http://scale0.interstagebpm.com/ora2/aa",
+      "tenant": "StressTest",
+      "app": "RandomWalk"
+    },
+    {
+      "id": "ora3",
+      "url": "http://scale0.interstagebpm.com/ora3/aa",
+      "tenant": "StressTest",
+      "app": "RandomWalk"
+    },
+    {
+      "id": "ora4",
+      "url": "http://scale0.interstagebpm.com/ora4/aa",
+      "tenant": "StressTest",
+      "app": "RandomWalk"
+    },
+    {
+      "id": "ora5",
+      "url": "http://scale0.interstagebpm.com/ora5/aa",
+      "tenant": "StressTest",
+      "app": "RandomWalk"
+    },
+    {
+      "id": "ora6",
+      "url": "http://scale0.interstagebpm.com/ora6/aa",
+      "tenant": "StressTest",
+      "app": "RandomWalk"
+    },
+    {
+      "id": "ora7",
+      "url": "http://scale0.interstagebpm.com/ora7/aa",
+      "tenant": "StressTest",
+      "app": "RandomWalk"
+    },
+    {
+      "id": "ora8",
+      "url": "http://scale0.interstagebpm.com/ora8/aa",
+      "tenant": "StressTest",
+      "app": "RandomWalk"
+    },
+    {
+      "id": "ora9",
+      "url": "http://scale0.interstagebpm.com/ora9/aa",
+      "tenant": "StressTest",
+      "app": "RandomWalk"
+    }
+  ]
+}

@@ -1,0 +1,378 @@
+{
+
+    "APPICATION_STATE":{
+        "1": "Application is not running",
+        "2": "Application is running"
+    },
+    "SELECT": "Change language",
+    "time.by" : "created by",
+    "TIMES":{
+        "agoPrefix":",",
+        "agoSuffix":"ago"
+    },
+    "COMMENT":{
+        "addComment":"Add Comment"
+    },
+    "PROCESSINSTANCE_STATE": {
+        "0":"Open",
+        "3":"Created",
+        "7":"Running",
+        "8":"Closed",
+        "10":"Error",
+        "11":"Aborted",
+        "12":"Suspended"
+    },
+    "PROCESS_INSTANCE_FILTER":{
+        "AllActiveProcesses": "All Active Processes",
+        "MyProcesses": "My Processes",
+        "AllProcesses": "All Processes",
+        "MyActiveProcesses": "My Active Processes",
+        "AllInactiveProcesses": "All Inactive Processes",
+        "MyInactiveProcesses": "My Inactive Processes",
+        "AllProcessesInErrorState": "All Processes in Error State"
+    } ,
+    "PI_TABLE" :{
+                "id": "Id",
+                "name": "Name",
+                "instanceName": "Instance Name",
+                "creationTime": "Creation Time",
+                "created": "Created",
+                "priority": "Priority",
+                "dueDate": "Due Date"
+            },
+    "PD_TABLE" :{
+                "id": "Id",
+                "name": "Name",
+                "state": "State",
+                "version": "Version",
+                "priority": "Priority",
+                "owner": "Owner",
+                "application": "Application"
+            },
+    "WI_TABLE" :{
+                "id": "Id",
+                "name": "Name",
+                "instanceName": "Instance Name",
+                "creationTime": "Creation Time",
+                "created": "Created",
+                "priority": "Priority",
+                "dueDate": "Due Date"
+            },
+    "PRIORITY": {
+          "undefined": "Undefined",
+          "low": "Low",
+          "medium": "Medium",
+          "high": "High"
+      },
+    "WORK_ITEM_STATE": {
+        "0":"Open",
+        "3":"Active",
+        "4":"Deactive",
+        "6":"Declined",
+        "8":"Accepted",
+        "12":"Waiting for SubProcess",
+        "14":"Suspended",
+        "15":"Read",
+        "16":"Voted",
+        "25":"Future",
+        "-1":"Completed"
+    },
+    "CREATION_DATE": "Creation Date",
+    "CLOSED_DATE": "Closed Date",
+    "DUE_DATE": "Due Date",
+    "PRIORITY_DD": "Priority",
+    "NAME": "Name",
+    "INSTANCE_NAME": "Instance Name",
+    "STATE": "State",
+    "WORK_ITEM_FILTER": {
+        "myCurrentWorkItems": "My Current Work Items",
+        "myWorkItems": "My Work Items",
+        "myActiveWorkItems": "My Active Work Items",
+        "myAcceptedWorkItems": "My Accepted Work Items",
+        "myDeclinedWorkItems": "My Declined Work Items",
+        "allWorkItems": "All Work Items",
+        "allInactiveWorkItems": "All Inactive Work Items"
+    } ,
+    "NODEINSTANCE_STATE": {
+            "0": "Not Started",
+            "3": "Assigned",
+            "4": "Waiting",
+            "5": "Closed",
+            "6": "Aborted",
+            "10": "Error",
+            "11": "Suspended"
+    },
+    "BPM": {
+        "accept": "Accept",
+        "decline": "Decline",
+        "reassign": "Reassign",
+        "addSubTask": "Add Sub-Task",
+        "id": "Id",
+        "plan": "Plan",
+        "version": "Version",
+        "owner": "Owner",
+        "initiator":"Initiator",
+        "suspend":"Suspend",
+        "resume":"Resume",
+        "abort":"Abort",
+        "task":"Task",
+        "taskName":"Task Name"
+    },
+    "DIRECTORY": {
+        "groups": "Groups",
+        "users": "Users",
+        "filterGroups": "Filter Groups",
+        "filterUsers": "Filter Users",
+        "selected": "Selected"
+    },
+    "PROCESS_DEFINITION_FILTER": {
+        "allPlans": "All Plans",
+        "myPlans": "My Plans"
+    },
+    "PROCESS_DEFINITION_STATE": {
+        "0":"Draft",
+        "1":"Published",
+        "2":"Private",
+        "3":"Obsolete",
+        "4":"Deleted"
+    },
+    "TIME": {
+        "day": "day",
+        "days": "days",
+        "hour": "hour",
+        "hours": "hours",
+        "minute": "minute",
+        "minutes": "minutes"
+    },
+    "PROCESS_ACTIONS": "Process Actions",
+    "TASK_ACTIONS": "Task Actions",
+    "CREATE_INSTANCE_LABLE": {
+        "plan": "Plan",
+        "version": "Version",
+        "udaList": "UDA list"
+    },
+    "dashboard": {
+        "addKPI": "Add KPI",
+        "addNew": "Add chart",
+        "addPopupLink": "Add popup link",
+        "applyBtn": "Apply",
+        "cancelBtn": "Cancel",
+        "createNew": "Create new",
+        "dasboardMaxCountMsg": "Maximum '{{dasboardMaxCountTran}}' Dashboard can be created in '{{appNameTran}}' application !",
+        "dateRange": "Date range",
+        "deleteBtn": "Delete",
+        "deleteDashboardConfirmation": "Do you want to delete '{{dashboardNameTran}}' dashboard ? ",
+        "lastDashboardDeleteMsg": "Atleast one Dashboard should be active !",
+        "maxBottomCountMsg": "Maximum '{{maxBottomCountTran}}' Chart Links can be added in a Dashboard !",
+        "modify": "Modify",
+        "modifySearch": "Modify Search",
+        "noResultFound": "No Result Found !!!",
+        "pdf": {
+          "applicationName": "Application",
+          "dateRange": "Date Range",
+          "generatedBy": "Report generated by Fujitsu Digital Transformation Platform",
+          "generatedOn": "Generated on ",
+          "tenantName": "Tenant"
+        },
+        "refreshInterval": "Refresh Interval",
+        "refreshIntervalValues" : {
+          "Off": "Off",
+          "5 Seconds": "5 Seconds",
+          "10 Seconds": "10 Seconds",
+          "30 Seconds": "30 Seconds",
+          "45 Seconds": "45 Seconds",
+          "1 Minute": "1 Minute",
+          "15 Minutes": "15 Minutes",
+          "30 Minutes": "30 Minutes"
+        },
+        "saveBtn": "Save",
+        "saveChangesConfirmation": "Do you want to save the changes ? ",
+        "saveDashboard": "Do you want to save dasboards ?",
+        "searchQuery": "Search query",
+        "selectPanel": "Select Panel",
+        "sidebarNavigation": "Sidebar Navigation",
+        "turnoffAutoRefreshBeforeDashboardEdit": "Please turn off auto refresh before edit dashboard !"
+      },
+      "processInstance": {
+        "activitiesAndStates": "Activities and States",
+        "hideGraph": "Hide Graph",
+        "history": "History",
+        "processInstanceId": "Process Instance Id",
+        "processes": "Processes",
+        "responsible": "Responsible",
+        "showGraph": "Show Graph"
+      },
+      "comments": {
+        "Comment": "Comment",
+        "Comments": "Comments",
+        "addComment": "Add comment"
+      },
+      "pup": {
+        "accept": "Accept",
+        "addSubTask": "Add Sub-task",
+        "decline": "Decline",
+        "id": "id",
+        "initiator": "Initiator",
+        "instance": "Process",
+        "instanceName": "Process name",
+        "instances": "Processes",
+        "owner": "Owner",
+        "plan": "Plan",
+        "plans": "Plans",
+        "reassign": "Reassign",
+        "reassignTask": "Reassign Task",
+        "subTask": "Sub-task",
+        "subTasks": "Sub-tasks",
+        "task": "Task",
+        "taskName": "Task name",
+        "version": "Version"
+      },
+      "esDownMsg": "Unable to display process graphic.",
+      "navBar": {
+        "DXPMonitor": "DXP Monitor",
+        "dashboard": "Dashboard",
+        "home": "Home",
+        "newProcess": "New Process",
+        "processes": "Processes",
+        "tasks": "Tasks"
+      },
+      "home": {
+        "bpm": "Fujitsu DXP",
+        "dashboardButton": "Dashboard",
+        "dashboardHeading": "Dashboard",
+        "dashboardText": "Fast path to Key Indicators",
+        "intro": "Fujitsu DXP is your comprehensive solution for Business Process and Case Management.",
+        "newProcess": "If you just deployed your application, start here to create a new process. It gives you the list of process definitions.",
+        "newProcessButton": "Start",
+        "newProcessHeading": "Start a Process",
+        "processButton": "Processes",
+        "processHeading": "Track Processes",
+        "processText": "Track and manage your processes.",
+        "taskButton": "Tasks",
+        "taskHeading": "Task List",
+        "taskText": "Each user has a personal work list where they can manage their tasks."
+      },
+      "error": {
+        "problem": "Problem:",
+        "showTraceDetails": "Show Trace Details",
+        "trace": "Trace:"
+      },
+      "udaFilter":{
+        "UDAName": "UDA Name",
+        "type": "Type",
+        "operator":"Operator",
+        "value":"Value",
+        "filter":"Search",
+        "clear":"Clear",
+        "addUda":"Add UDA",
+        "addSort":"Add Sort",
+        "addUdaSorting":"Add UDA Sorting",
+        "addCreationDate":"Add Creation date",
+        "addState":"Add State",
+        "creationDate":"Creation Date",
+        "state":"State",
+        "showFilter":"Search",
+        "addpds":"Add PD",
+        "processDefinition":"Process Definition"
+       },
+       "processInstanceState": {
+        "1": "Running",
+        "10": "Error",
+        "11": "Aborted",
+        "12": "Suspended",
+        "2": "Closed",
+        "7": "Running",
+        "8": "Closed",
+        "state": "State"
+      },
+      "kpiLabels": {
+        "0": "Running Process Instance",
+        "1": "Closed Process Instance",
+        "2": "My Active  Task",
+        "3": "My Closed Task",
+        "4": "Active Overdue Task",
+        "5": "All Active Task",
+        "6": "All Closed Task"
+      },
+      "days": {
+        "Fr": "Fr",
+        "Mo": "Mo",
+        "Sa": "Sa",
+        "Su": "Su",
+        "Th": "Th",
+        "Tu": "Tu",
+        "We": "We"
+      },
+      "month": {
+        "Apr": "Apr",
+        "Aug": "Aug",
+        "Dec": "Dec",
+        "Feb": "Feb",
+        "Jan": "Jan",
+        "Jul": "Jul",
+        "Jun": "Jun",
+        "Mar": "Mar",
+        "May": "May",
+        "Nov": "Nov",
+        "Oct": "Oct",
+        "Sep": "Sep"
+      },
+      "dateRange": {
+        "custom": "Custom",
+        "lastMonth": "Last 30 days",
+        "lastWeek": "Last 7 days",
+        "yesterday": "Yesterday"
+      },
+      "charts": {
+        "Activity Lead Time In Closed Processes": "Activity Lead Time In Closed Processes",
+        "Activity Lead Time In Running Processes": "Activity Lead Time In Running Processes",
+        "All Running Process Lead Time": "All Running Process Lead Time",
+        "All Running and Closed Process Lead Time": "All Running and Closed Process Lead Time",
+        "All running processes within the time period": "All running processes within the time period",
+        "Average Processing Time Per Route": "Average Processing Time Per Route",
+        "Average Running Time For All Running Processes": "Average Running Time For All Running Processes",
+        "Average of Closed Activity Completion Time": "Average of Closed Activity Completion Time",
+        "Average of Running Activity Lead Time": "Average of Running Activity Lead Time",
+        "Closed And Running Processes Per Day": "Closed And Running Processes Per Day",
+        "Closed Process Completion Lead Time": "Closed Process Completion Lead Time",
+        "Custom Chart": "Custom Chart",
+        "Download CSV": "Download CSV",
+        "Download PDF": "Download PDF",
+        "No Data Available": "No Data Available",
+        "Number Of Activities By Name": "Number Of Activities By Name",
+        "Number Of Activities Closed By Date": "Number Of Activities Closed By Date",
+        "Number Of Activities Created By Date": "Number Of Activities Created By Date",
+        "Number Of Closed Processes By Day": "Number Of Closed Processes By Day",
+        "Number Of Running Processes By Day": "Number Of Running Processes By Day",
+        "Number of Finished Tasks From Each Person": "Number of Finished Tasks From Each Person",
+        "Number of Running Tasks Each Person Owns": "Number of Running Tasks Each Person Owns",
+        "Open And Closed Activities Running Time": "Open And Closed Activities Running Time",
+        "Opened Processes By Hour": "Opened Processes By Hour",
+        "Opened and Closed Processes By Day": "Opened and Closed Processes By Day",
+        "Opened and Closed Processes By Hour": "Opened and Closed Processes By Hour",
+        "Percentage by Process State": "Percentage by Process State",
+        "Percentage of Processes by Plan Name": "Percentage of Processes by Plan Name",
+        "Running Work Item Lead Time Per Person": "Running Work Item Lead Time Per Person",
+        "Running Work Items By Plan": "Running Work Items By Plan",
+        "Show Data Table": "Show Data Table",
+        "Standard Chart": "Standard Chart"
+      },
+      "timeout": {
+        "SessionTimeOut":"Session Time Out",
+        "inactivityMsg":"For security, your session will expire after 30 min of inactivity.",
+        "sessionexpirein":"Your session will expire in ",
+        "ContinueSession":"Continue Session",
+        "Togetback":"To get back to what you where doing:",
+        "Login":"Login"
+      },
+      "errorDetail": "Error Detail",
+      "pagination": {
+        "display": "Display",
+        "first": "First",
+        "last": "Last",
+        "next": "Next",
+        "previous": "Previous"
+      }
+
+
+}

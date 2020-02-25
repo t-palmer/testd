@@ -1,0 +1,46 @@
+{
+	"dasboardConfig": {
+		  "dashboard_count": 10,
+		  "top_panel_count": 4,  
+		  "mid_panel_count": 4,
+		  "botttom_panel_count": 10,
+		  "max_custom_chart": 15
+	},
+	"kpiList": [
+        {
+          "title": "Running Process Instance",
+          "bg_class": "well runProc",
+          "id": 0
+        },
+        {
+          "title": "Closed Process Instance",
+          "bg_class": "well closeProc",
+          "id": 1
+        },
+        {
+          "title": "My Active Task",
+          "bg_class": "well actvTask",
+          "id": 2
+        },
+        {
+          "title": "My Closed Task",
+          "bg_class": "well closeTask",
+          "id": 3
+        },        
+        {
+          "title": "Active Overdue Task",
+          "bg_class": "well overTask",
+          "id": 4
+        },
+        {
+          "title": "All Active Task",
+          "bg_class": "well allActvTask",
+          "id": 5
+        },
+        {
+          "title": "All Closed Task",
+          "bg_class": "well allCloseTask",
+          "id": 6
+        }
+     ]         
+}

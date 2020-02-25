@@ -1,0 +1,10 @@
+{
+  "dashboardDetail": [
+					{ 
+						"dashboardId": "dashboard1",  
+						"dashboardName": "Default Dashboard", 
+						"fileName": "Dashboard1.json",  
+						"isDeleted": false
+					}
+				]
+}

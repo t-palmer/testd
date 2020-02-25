@@ -1,0 +1,2657 @@
+[ {
+       "id" : "ActivitiesInAClosedProcess",
+       "name" : "Activity Lead Time In Closed Processes",
+       "desc" : "Total duration of activities in each closed processes.",
+       "esIndex" : "/Analytics/ai",
+       "esQuery": {
+        			  "size": 0,
+        			  "aggs": {
+        			    "2": {
+        			      "terms": {
+        			        "field": "ProcessId",
+        			        "size": 10000,
+        			        "order": {
+        			          "1": "desc"
+        			        }
+        			      },
+        			      "aggs": {
+        			        "1": {
+        			          "sum": {
+        			            "field": "ActivityLeadTime",
+        			            "script": {
+        			              "inline": "doc['ActivityLeadTime'].value/(3600*1000)",
+        			              "lang": "painless"
+        			            }
+        			          }
+        			        },
+        			        "3": {
+        			          "terms": {
+        			            "field": "ActivityName",
+        			            "size": 10000,
+        			            "order": {
+        			              "1": "desc"
+        			            }
+        			          },
+        			          "aggs": {
+        			            "1": {
+        			              "sum": {
+        			                "field": "ActivityLeadTime",
+        			                "script": {
+        			                  "inline": "doc['ActivityLeadTime'].value/(3600*1000)",
+        			                  "lang": "painless"
+        			                }
+        			              }
+        			            }
+        			          }
+        			        }
+        			      }
+        			    }
+        			  },
+        			  "query": {
+        			    "bool": {
+        			      "must": [
+        			        {
+        			          "query_string": {
+        			            "analyze_wildcard": true,
+        			            "query": "[[query]]"
+        			          }
+        			        },
+        			        {
+        			          "match_phrase": {
+        			            "ProcessState": {
+        			              "query": "Closed"
+        			            }
+        			          }
+        			        },
+        			        {
+        			          "range": {
+        			            "ActivityCreationTime": {
+        			              "gte": "[[begin_time]]",
+        			              "lte": "[[end_time]]"
+        			            }
+        			          }
+        			        }
+        			      ],
+        			      "must_not": []
+        			    }
+        			  },
+        			  "_source": {
+        			    "excludes": []
+        			  }
+        	},
+       "chartPath":  "#chart svg",
+       "chartType": "stackbar",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc":"var convertToStackBarChartData = function(data) {\n        var chartData = [];\n        var buckets = data.aggregations[\"2\"].buckets;\n        var _getSliceData = function(chartData, sbkey) {\n            var slice = null;\n            for(var i=0; i < chartData.length; i++) {\n                slice = chartData[i];\n                if(slice.key == sbkey) {\n                    return slice;\n                }\n            }\n            slice = {\"key\":sbkey, \"values\":[]};\n            chartData.push(slice);\n            return slice;\n        }\n        \n        for(var i=0; i < buckets.length; i++) {\n            var bucket = buckets[i];\n            var BKEY = bucket.key;\n            var subBuckets = bucket[\"3\"].buckets;\n            for(var k=0; k < subBuckets.length; k++) {\n                var subBucket = subBuckets[k];\n                var SBKEY = null;\n                var VAL = null;\n               if(subBucket.hasOwnProperty(\"key_as_string\")) {\n                       SBKEY = subBucket.key_as_string;\n               } else {\n                      SBKEY = subBucket.key;\n               }\n               if(subBucket.hasOwnProperty(\"1\")) {\n                      VAL = parseFloat(subBucket[\"1\"].value);\n               } else {\n                      VAL = parseFloat(subBucket[\"doc_count\"]);\n               }\n                var slice = _getSliceData(chartData, SBKEY);\n                var ele = {\"y\":VAL,\"x\":BKEY};\n                slice.values.push(ele);\n            }\n        }\n        for(var j=0; j < chartData.length; j++) {\n            var slice = chartData[j];\n            for(var k=0; k < buckets.length; k++) {\n                var bkey = buckets[k].key;\n                var found = false;\n                for(var m=0; m < slice.values.length; m++) {\n                    if(slice.values[m].x == bkey) {\n                        found = true;\n                        break;\n                    }\n                }\n                if(!found) {\n                    slice.values.push({\"y\":0,\"x\":bkey});\n                }\n            }\n\n            slice.values.sort(function(obj1, obj2) {\n                if(typeof obj1.x === \"string\" && typeof obj2.x === \"string\") {\n                    var A = obj1.x.toLowerCase();\n                    var B = obj2.x.toLowerCase();\n                    if(A < B) {\n                        return -1;\n                    } else if (A > B) {\n                        return  1;\n                    } else{\n                        return 0;\n                    }\n                } else {\n                    return obj1.x - obj2.x;\n                }\n            });\n\n        }\n         \n        return chartData;\n}\nconvertToStackBarChartData(chartConfig.esData);",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {"bottom": 70},
+           "color": "nv.utils.defaultColor()",
+           "showControls": true,
+           "showLegend": true,
+           "showXAxis": true,
+           "showYAxis": true,
+           "xLabel": "Process ID",
+           "yLabel": "Activity Lead Time (Hour)",
+           "xRotateLabels": 45,
+           "xFormatter": "getD3Locale(chartConfig).numberFormat(',.')",
+           "yFormatter": "getD3Locale(chartConfig).numberFormat(',.2f')",
+           "tooltipHeaderFormatter":"",
+           "tooltipValueFormatter":"",
+           "xLabelDistance": 35,
+           "yLabelDistance": -5,
+           "xShowMaxMin": false,
+           "yShowMaxMin": true,
+           "duration": 300,
+           "reduceXTicks": true,
+           "staggerLabels": false,
+           "groupSpacing": 0.1,
+           "useInteractiveGuideline": true,
+           "legendPosition": "top",
+           "dblClickEventHandler":""
+       },
+       "childChart": null
+   },
+   
+   
+   
+   
+   {
+       "id" : "ActivitiesInARunningProcess",
+       "name" : "Activity Lead Time In Running Processes",
+       "desc" : "Total duration of activities in each running processes.",
+       "esIndex" : "/Analytics/ai",
+       "esQuery": {
+        			  "size": 0,
+        			  "aggs": {
+        			    "2": {
+        			      "terms": {
+        			        "field": "ProcessId",
+        			        "size": 10000,
+        			        "order": {
+        			          "1": "desc"
+        			        }
+        			      },
+        			      "aggs": {
+        			        "1": {
+        			          "sum": {
+        			            "field": "ActivityLeadTime",
+        			            "script": {
+        			              "inline": "doc['ActivityLeadTime'].value/(3600*1000)",
+        			              "lang": "painless"
+        			            }
+        			          }
+        			        },
+        			        "3": {
+        			          "terms": {
+        			            "field": "ActivityName",
+        			            "size": 10000,
+        			            "order": {
+        			              "1": "desc"
+        			            }
+        			          },
+        			          "aggs": {
+        			            "1": {
+        			              "sum": {
+        			                "field": "ActivityLeadTime",
+        			                "script": {
+        			                  "inline": "doc['ActivityLeadTime'].value/(3600*1000)",
+        			                  "lang": "painless"
+        			                }
+        			              }
+        			            }
+        			          }
+        			        }
+        			      }
+        			    }
+        			  },
+        			  "query": {
+        			    "bool": {
+        			      "must": [
+        			        {
+        			          "query_string": {
+        			            "analyze_wildcard": true,
+        			            "query": "[[query]]"
+        			          }
+        			        },
+        			        {
+        			          "match_phrase": {
+        			            "ProcessState": {
+        			              "query": "Running"
+        			            }
+        			          }
+        			        },
+        			        {
+        			          "range": {
+        			            "ActivityCreationTime": {
+        			              "gte": "[[begin_time]]",
+        			              "lte": "[[end_time]]"
+        			            }
+        			          }
+        			        }
+        			      ],
+        			      "must_not": []
+        			    }
+        			  },
+        			  "_source": {
+        			    "excludes": []
+        			  }
+        	},
+       "chartPath":  "#chart svg",
+       "chartType": "stackbar",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc":"var convertToStackBarChartData = function(data) {\n        var chartData = [];\n        var buckets = data.aggregations[\"2\"].buckets;\n        var _getSliceData = function(chartData, sbkey) {\n            var slice = null;\n            for(var i=0; i < chartData.length; i++) {\n                slice = chartData[i];\n                if(slice.key == sbkey) {\n                    return slice;\n                }\n            }\n            slice = {\"key\":sbkey, \"values\":[]};\n            chartData.push(slice);\n            return slice;\n        }\n        \n        for(var i=0; i < buckets.length; i++) {\n            var bucket = buckets[i];\n            var BKEY = bucket.key;\n            var subBuckets = bucket[\"3\"].buckets;\n            for(var k=0; k < subBuckets.length; k++) {\n                var subBucket = subBuckets[k];\n                var SBKEY = null;\n                var VAL = null;\n               if(subBucket.hasOwnProperty(\"key_as_string\")) {\n                       SBKEY = subBucket.key_as_string;\n               } else {\n                      SBKEY = subBucket.key;\n               }\n               if(subBucket.hasOwnProperty(\"1\")) {\n                      VAL = parseFloat(subBucket[\"1\"].value);\n               } else {\n                      VAL = parseFloat(subBucket[\"doc_count\"]);\n               }\n                var slice = _getSliceData(chartData, SBKEY);\n                var ele = {\"y\":VAL,\"x\":BKEY};\n                slice.values.push(ele);\n            }\n        }\n        for(var j=0; j < chartData.length; j++) {\n            var slice = chartData[j];\n            for(var k=0; k < buckets.length; k++) {\n                var bkey = buckets[k].key;\n                var found = false;\n                for(var m=0; m < slice.values.length; m++) {\n                    if(slice.values[m].x == bkey) {\n                        found = true;\n                        break;\n                    }\n                }\n                if(!found) {\n                    slice.values.push({\"y\":0,\"x\":bkey});\n                }\n            }\n\n            slice.values.sort(function(obj1, obj2) {\n                if(typeof obj1.x === \"string\" && typeof obj2.x === \"string\") {\n                    var A = obj1.x.toLowerCase();\n                    var B = obj2.x.toLowerCase();\n                    if(A < B) {\n                        return -1;\n                    } else if (A > B) {\n                        return  1;\n                    } else{\n                        return 0;\n                    }\n                } else {\n                    return obj1.x - obj2.x;\n                }\n            });\n\n        }\n         \n        return chartData;\n}\nconvertToStackBarChartData(chartConfig.esData);",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {"bottom": 70},
+           "color": "nv.utils.defaultColor()",
+           "showControls": true,
+           "showLegend": true,
+           "showXAxis": true,
+           "showYAxis": true,
+           "xLabel": "Process ID",
+           "yLabel": "Activity Lead Time (Hour)",
+           "xRotateLabels": 45,
+           "xFormatter": "getD3Locale(chartConfig).numberFormat(',.')",
+           "yFormatter": "getD3Locale(chartConfig).numberFormat(',.2f')",
+           "tooltipHeaderFormatter":"",
+           "tooltipValueFormatter":"",
+           "xLabelDistance": 35,
+           "yLabelDistance": -5,
+           "xShowMaxMin": false,
+           "yShowMaxMin": true,
+           "duration": 300,
+           "reduceXTicks": true,
+           "staggerLabels": false,
+           "groupSpacing": 0.1,
+           "useInteractiveGuideline": true,
+           "legendPosition": "top",
+           "dblClickEventHandler":""
+       },
+       "childChart": null
+   },
+   
+   
+   
+      {
+       "id": "ActivityClosedByDate",
+       "name" : "Number Of Activities Closed By Date",
+       "desc" : "Number of activities closed by days. Day starts at mid night of each day.",
+       "esIndex" : "/Analytics/ai",
+       "esQuery": {
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "query": "[[query]]",
+            "analyze_wildcard": true
+          }
+        },
+        {
+          "range": {
+            "ActivityClosedTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "2": {
+      "date_histogram": {
+        "field": "ActivityClosedTime",
+        "interval": "1d",
+        "time_zone": "[[time_zone]]",
+        "min_doc_count": 1
+      },
+      "aggs": {
+        "3": {
+          "terms": {
+            "field": "ActivityName",
+            "size": 10000,
+            "order": {
+              "_count": "desc"
+            }
+          }
+        }
+      }
+    }
+  }
+},
+       "chartPath": "#chart svg",
+       "chartType": "horizontal_multi_bar",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc": "var convertToHorizontalMultiBarChartData = function(data) {\n        var chartData = [];\n        var buckets = data.aggregations[\"2\"].buckets;\n        var _getSliceData = function(chartData, sbkey) {\t\n            var slice = null;\n            for(var i=0; i < chartData.length; i++) {\n                slice = chartData[i];\n                if(slice.key == sbkey) {\n                    return slice;\n                }\n            }\n            slice = {\"key\":sbkey, \"values\":[]};\n            chartData.push(slice);\n            return slice;\n        }\n        for(var i=0; i < buckets.length; i++) {\n            var bucket = buckets[i];\n            var BKEY = bucket.key;\n            var subBuckets = bucket[\"3\"].buckets;\n            for(var k=0; k < subBuckets.length; k++) {\n                var subBucket = subBuckets[k];\n                var SBKEY = subBucket.key;\n                if(subBucket.hasOwnProperty(\"key_as_string\")) {\n                        SBKEY = subBucket[\"key_as_string\"];\n                }\n                var VAL = parseFloat(subBucket.doc_count);\n                if(subBucket.hasOwnProperty(\"1\")) {\n                       VAL = parseFloat(subBucket[\"1\"][\"value\"]);\n                }\n                var slice = _getSliceData(chartData, SBKEY);\n                var ele = {\"value\":VAL,\"label\":BKEY};\n                slice.values.push(ele);\n            }\n        }\n        for(var j=0; j < chartData.length; j++) {\n            var slice = chartData[j];\n            for(var k=0; k < buckets.length; k++) {\n                var bkey = buckets[k].key;\n                var found = false;\n                for(var m=0; m < slice.values.length; m++) {\n                    if(slice.values[m].label == bkey) {\n                        found = true;\n                        break;\n                    }\n                }\n                if(!found) {\n                    slice.values.push({\"value\":0,\"label\":bkey});\n                }\n            }\n            slice.values.sort(function(obj1, obj2) {\n                if(typeof obj1.label === \"string\" && typeof obj2.label === \"string\") {\n                    var A = obj1.label.toLowerCase();\n                    var B = obj2.label.toLowerCase();\n                    if(A < B) {\n                        return -1;\n                    } else if (A > B) {\n                        return  1;\n                    } else{\n                        return 0;\n                    }\n                } else {\n                    return obj1.label - obj2.label;\n                }\n            });\n        }\n        \n        return chartData;\n}\nconvertToHorizontalMultiBarChartData(chartConfig.esData);",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {"left": 80},
+           "color": "nv.utils.defaultColor()",
+           "showControls": true,
+           "showValues": true,
+           "showLegend": true,
+           "showXAxis": true,
+           "showYAxis": true,
+           "xLabel": "Activity Closed Time",
+           "yLabel": "Number of Activities",
+           "yRotateLabels": 0,
+           "xFormatter": "(function (d) {return getD3Locale(chartConfig).timeFormat('%x')(new Date(d))})",
+           "yFormatter": "getD3Locale(chartConfig).numberFormat(',.')",
+           "tooltipHeaderFormatter":"",
+           "tooltipValueFormatter":"",
+           "xLabelDistance": 20,
+           "yLabelDistance": -5,
+           "xShowMaxMin": true,
+           "yShowMaxMin": true,
+           "duration": 300,
+           "groupSpacing": 0.1,
+           "valueFormatter": "getD3Locale(chartConfig).numberFormat(',.')",
+           "legendPosition": "top",
+           "dblClickEventHandler":""
+       },
+       "childChart": null
+   },
+   
+   
+   
+   
+   {
+       "id" : "ActivityCreatedByDate",
+       "name" : "Number Of Activities Created By Date",
+       "desc" : "Number of activities created by days. Day starts at mid night of each day.",
+       "esIndex" : "/Analytics/ai",
+       "esQuery": {
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "analyze_wildcard": true,
+            "query": "[[query]]"
+          }
+        },
+        {
+          "range": {
+            "ActivityCreationTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "2": {
+      "date_histogram": {
+        "field": "ActivityCreationTime",
+        "interval": "1d",
+        "time_zone": "[[time_zone]]",
+        "min_doc_count": 1
+      },
+      "aggs": {
+        "3": {
+          "terms": {
+            "field": "ActivityName",
+            "size": 10000,
+            "order": {
+              "_count": "desc"
+            }
+          }
+        }
+      }
+    }
+  }
+},
+       "chartPath": "#chart svg",
+       "chartType": "stackarea",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc": "var convertToStackAreaChartData = function(data) {\n        var chartData = [];\n        var xtickLabels = [];\n        var buckets = data.aggregations[\"2\"].buckets;\n        var _getSliceData = function(chartData, sbkey) {\n            var slice = null;\n            for(var i=0; i < chartData.length; i++) {\n                slice = chartData[i];\n                if(slice.key == sbkey) {\n                    return slice;\n                }\n            }\n            slice = {\"key\":sbkey, \"values\":[],\"xtickLabels\":xtickLabels};\n            chartData.push(slice);\n            return slice;\n        }\n        \n        for(var i=0; i < buckets.length; i++) {\n            var bucket = buckets[i];\n            var BKEY = bucket.key;\n            var subBuckets = bucket[\"3\"].buckets;\n            if(xtickLabels.indexOf(BKEY) < 0) {\n                 xtickLabels.push(BKEY);\n            }\n            for(var k=0; k < subBuckets.length; k++) {\n                var subBucket = subBuckets[k];\n                var SBKEY = subBucket.key;\n                var VAL = parseFloat(subBucket[\"doc_count\"]);\n                if(subBucket.hasOwnProperty(\"1\")) {\n                       VAL = parseFloat(subBucket[\"1\"][\"value\"]);\n                }\n                var slice = _getSliceData(chartData, SBKEY);\n                var ele = [xtickLabels.indexOf(BKEY),VAL];\n                slice.values.push(ele);\n            }\n        }\n        for(var j=0; j < chartData.length; j++) {\n            var slice = chartData[j];\n            for(var k=0; k < buckets.length; k++) {\n                var bkey = xtickLabels.indexOf(buckets[k].key);\n                var found = false;\n                for(var m=0; m < slice.values.length; m++) {\n                    if(slice.values[m][0] == bkey) {\n                        found = true;\n                        break;\n                    }\n                }\n                if(!found) {\n                    slice.values.push([bkey,0]);\n                }\n            }\n            slice.values.sort(function(obj1, obj2) {\n                if(typeof obj1[0] === \"string\" && typeof obj2[0] === \"string\") {\n                    var A = obj1[0].toLowerCase();\n                    var B = obj2[0].toLowerCase();\n                    if(A < B) {\n                        return -1;\n                    } else if (A > B) {\n                        return  1;\n                    } else{\n                        return 0;\n                    }\n                } else {\n                    return obj1[0] - obj2[0];\n                }\n            });\n        }\n                \n        return chartData;\n}\nconvertToStackAreaChartData(chartConfig.esData);",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {},
+           "color": "nv.utils.defaultColor()",
+           "showControls": true,
+           "showLegend": true,
+           "showXAxis": true,
+           "showYAxis": true,
+           "xLabel": "Activity Creation Time",
+           "yLabel": "Number of Activities",
+           "xRotateLabels": 0,
+           "xFormatter": "(function(d) { return getD3Locale(chartConfig).timeFormat('%x %H:%M:%S')(new Date(chartConfig.chartData[0].xtickLabels[d])); })",
+           "yFormatter": "getD3Locale(chartConfig).numberFormat(',.')",
+           "tooltipHeaderFormatter":"",
+           "tooltipValueFormatter":"",
+           "xLabelDistance": 5,
+           "yLabelDistance": -5,
+           "xShowMaxMin": false,
+           "yShowMaxMin": true,
+           "duration": 300,
+           "showTotalInTooltip": true,
+           "totalLabel": "Total",
+           "useInteractiveGuideline": true,
+           "legendPosition": "top",
+           "clickEventHandler":""
+       },
+       "childChart": null
+   },
+   
+   
+   
+      {
+       "id" : "AllProcessRunningTime",
+       "name" : "All Running and Closed Process Lead Time",
+       "desc" : "Duration of running and closed processes started within the specified time period sorted by duration in descending order.",
+       "esIndex" : "/Analytics/pi",
+       "esQuery": {
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "analyze_wildcard": true,
+            "query": "[[query]]"
+          }
+        },
+        {
+          "range": {
+            "ProcessCreationTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "ProcessName",
+        "size": 10000,
+        "order": {
+          "1": "desc"
+        }
+      },
+      "aggs": {
+        "1": {
+          "avg": {
+            "field": "ProcessLeadTime",
+            "script": {
+              "inline": "doc['ProcessLeadTime'].value/(3600*1000)",
+              "lang": "painless"
+            }
+          }
+        }
+      }
+    }
+  }
+},
+       "chartPath": "#chart svg",
+       "chartType": "line",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc": "var convertToLineChartData = function(data) {\n        var chartData = [];\n        var xtickLabels = [];\n        var slice = {\"key\":\"\",\"values\":[],\"xtickLabels\":xtickLabels};\n        var buckets = data.aggregations[\"2\"].buckets;\n        var _xTickFormat = function(d) {\n            return xtickLabels[d];\n        }\n        chartData.push(slice);\n        for(var i=0; i < buckets.length; i++) {\n            var bucket = buckets[i];\n            var xval = bucket.key;\n            var yval = null;\n            if(bucket.hasOwnProperty(\"1\")) {\n                  yval =  parseFloat(bucket[\"1\"].value);\n            } else {\n                  yval = parseInt(bucket[\"doc_count\"]);\n           }\n            xtickLabels.push(xval);\n            slice.values.push({\"x\": xtickLabels.indexOf(xval),\"y\":yval});\n        }\n        return chartData;\n}\n\nconvertToLineChartData(chartConfig.esData);",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {"bottom": 100},
+           "color": "nv.utils.defaultColor()",
+           "showLegend": false,
+           "showXAxis": true,
+           "showYAxis": true,
+           "xLabel": "Process Name",
+           "yLabel": "Process Lead Time (Hour)",
+           "xRotateLabels": 45,
+           "xFormatter": "(function(d) { return chartConfig.chartData[0].xtickLabels[d]; })",
+           "yFormatter": "getD3Locale(chartConfig).numberFormat(',.2f')",
+           "tooltipHeaderFormatter":"",
+           "tooltipValueFormatter":"",
+           "xLabelDistance": 35,
+           "yLabelDistance": -5,
+           "xShowMaxMin": false,
+           "yShowMaxMin": false,
+           "duration": 300,
+           "useInteractiveGuideline": true,
+           "xTicksThreshold": 20,
+           "legendPosition": "top",
+           "clickEventHandler":""
+       },
+       "childChart": null
+   },
+   
+   
+   
+    {
+       "id" : "AvgActivityCompletionTime",
+       "name" : "Average of Closed Activity Completion Time",
+       "desc" : "Duration of closed activities started within the specified time period sorted by duration in descending order.",
+       "esIndex" : "/Analytics/ai",
+       "esQuery": {
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "analyze_wildcard": true,
+            "query": "[[query]]"
+          }
+        },
+        {
+          "match_phrase": {
+            "ActivityState": {
+              "query": "Closed"
+            }
+          }
+        },
+        {
+          "range": {
+            "ActivityCreationTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "ActivityName",
+        "exclude": "Start",
+        "size": 10000,
+        "order": {
+          "1": "desc"
+        }
+      },
+      "aggs": {
+        "1": {
+          "avg": {
+            "field": "ActivityLeadTime",
+            "script": {
+              "inline": "doc['ActivityLeadTime'].value/(3600*1000)",
+              "lang": "painless"
+            }
+          }
+        }
+      }
+    }
+  }
+},
+       "chartPath": "#chart svg",
+       "chartType": "line",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc": "var convertToLineChartData = function(data) {\n        var chartData = [];\n        var xtickLabels = [];\n        var slice = {\"key\":\"\",\"values\":[],\"xtickLabels\":xtickLabels};\n        var buckets = data.aggregations[\"2\"].buckets;\n        var _xTickFormat = function(d) {\n            return xtickLabels[d];\n        }\n        chartData.push(slice);\n        for(var i=0; i < buckets.length; i++) {\n            var bucket = buckets[i];\n            var xval = bucket.key;\n            var yval = null;\n            if(bucket.hasOwnProperty(\"1\")) {\n                  yval =  parseFloat(bucket[\"1\"].value);\n            } else {\n                  yval = parseInt(bucket[\"doc_count\"]);\n           }\n            xtickLabels.push(xval);\n            slice.values.push({\"x\": xtickLabels.indexOf(xval),\"y\":yval});\n        }\n        return chartData;\n}\n\nconvertToLineChartData(chartConfig.esData);",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {"bottom": 100},
+           "color": "nv.utils.defaultColor()",
+           "showLegend": false,
+           "showXAxis": true,
+           "showYAxis": true,
+           "xLabel": "Activity Name",
+           "yLabel": "Average Activity Completion Time (Hour)",
+           "xRotateLabels": 45,
+           "xFormatter": "(function(d) { return chartConfig.chartData[0].xtickLabels[d]; })",
+           "yFormatter": "getD3Locale(chartConfig).numberFormat(',.2f')",
+           "tooltipHeaderFormatter":"",
+           "tooltipValueFormatter":"",
+           "xLabelDistance": 35,
+           "yLabelDistance": -5,
+           "xShowMaxMin": false,
+           "yShowMaxMin": false,
+           "duration": 300,
+           "useInteractiveGuideline": true,
+           "xTicksThreshold": 20,
+           "legendPosition": "top",
+           "clickEventHandler":""
+       },
+       "childChart": null
+   },
+ 
+
+   
+    {
+       "id": "AvgProcessTimePerRoute",
+       "name" : "Average Processing Time Per Route",
+       "desc" : "Average Processing Time Per Route for those processes created within specified time period.",
+       "esIndex" : "/Analytics/pi",
+       "esQuery": {
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "query": "[[query]]",
+            "analyze_wildcard": true
+          }
+        },
+        {
+          "range": {
+            "ProcessCreationTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "Route",
+        "size": 10000,
+        "order": {
+          "1": "desc"
+        }
+      },
+      "aggs": {
+        "1": {
+          "avg": {
+            "field": "ProcessLeadTime",
+            "script": {
+              "inline": "doc['ProcessLeadTime'].value/(3600*1000)",
+              "lang": "painless"
+            }
+          }
+        }
+      }
+    }
+  }
+},
+       "chartPath": "#chart svg",
+       "chartType": "bar",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc": "var convertToBarChartData = function(data) {\n        var chartData = [{\"key\":\"\",\"values\":[]}];\n        var buckets = data.aggregations[\"2\"].buckets;\n        for(var i=0; i < buckets.length; i++) {\n            var label = buckets[i].key;\n            var value = null;\n            if(buckets[i].hasOwnProperty(\"1\")) {\n                value = buckets[i][\"1\"].value;\n            } else {\n                value = buckets[i][\"doc_count\"];\n            }\n            chartData[0].values.push({\"label\":label,\"value\":value});\n        }\n        return chartData;\n}\nconvertToBarChartData(chartConfig.esData);",
+       "drawFunc":  "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {"bottom": 100},
+           "color": "nv.utils.getColor()",
+           "showLegend": false,
+           "showXAxis": true,
+           "showYAxis": true,
+           "xLabel": "Route",
+           "yLabel": "Average Processing Time (Hour)",
+           "xRotateLabels": 90,
+           "xFormatter": "(function (d) {\n       if(typeof d === \"string\" && d.length > 10) {\n              return d.substring(0,10) + \"...\";\n       } else {\n              return d;\n      }\n   }\n)",
+           "yFormatter": "getD3Locale(chartConfig).numberFormat(',.2f')",
+           "tooltipKeyFormatter":"(function (d) {return '<pre>'+ d.replace(/->/g, '\\n->')+ '</pre>'})",
+           "tooltipValueFormatter":"",
+           "xLabelDistance": 35,
+           "yLabelDistance": -5,
+           "xShowMaxMin": false,
+           "yShowMaxMin": true,
+           "xTicksThreshold": 20,
+           "duration": 300,
+           "staggerLabels": false,
+           "wrapLabels": false,
+           "valueFormatter": "getD3Locale(chartConfig).numberFormat(',.2f')",
+           "dblClickEventHandler": "",
+           "barColor": "green",
+           "showValues": false
+       },
+       "childChart": null
+   },
+ 
+ 
+ 
+ 
+       {
+       "id" : "AvgRunningActivityTime",
+       "name" : "Average of Running Activity Lead Time",
+       "desc" : "Duration of running activities started within the specified time period sorted by duration in descending order.",
+       "esIndex" : "/Analytics/ai",
+       "esQuery": {
+  "size": 0,
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "ActivityName",
+        "exclude": "Start",
+        "size": 10000,
+        "order": {
+          "1": "desc"
+        }
+      },
+      "aggs": {
+        "1": {
+          "avg": {
+            "field": "ActivityLeadTime",
+            "script": {
+              "inline": "doc['ActivityLeadTime'].value/(3600*1000)",
+              "lang": "painless"
+            }
+          }
+        }
+      }
+    }
+  },
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "analyze_wildcard": true,
+            "query": "[[query]]"
+          }
+        },
+        {
+          "match_phrase": {
+            "ActivityState": {
+              "query": "Running"
+            }
+          }
+        },
+        {
+          "range": {
+            "ActivityCreationTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "_source": {
+    "excludes": []
+  }
+},
+       "chartPath": "#chart svg",
+       "chartType": "line",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc": "var convertToLineChartData = function(data) {\n        var chartData = [];\n        var xtickLabels = [];\n        var slice = {\"key\":\"\",\"values\":[],\"xtickLabels\":xtickLabels};\n        var buckets = data.aggregations[\"2\"].buckets;\n        var _xTickFormat = function(d) {\n            return xtickLabels[d];\n        }\n        chartData.push(slice);\n        for(var i=0; i < buckets.length; i++) {\n            var bucket = buckets[i];\n            var xval = bucket.key;\n            var yval = null;\n            if(bucket.hasOwnProperty(\"1\")) {\n                  yval =  parseFloat(bucket[\"1\"].value);\n            } else {\n                  yval = parseInt(bucket[\"doc_count\"]);\n           }\n            xtickLabels.push(xval);\n            slice.values.push({\"x\": xtickLabels.indexOf(xval),\"y\":yval});\n        }\n        return chartData;\n}\n\nconvertToLineChartData(chartConfig.esData);",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {"bottom": 100},
+           "color": "nv.utils.defaultColor()",
+           "showLegend": false,
+           "showXAxis": true,
+           "showYAxis": true,
+           "xLabel": "Activity Name",
+           "yLabel": "Average Activity Lead Time (Hour)",
+           "xRotateLabels": 45,
+           "xFormatter": "(function(d) { return chartConfig.chartData[0].xtickLabels[d]; })",
+           "yFormatter": "getD3Locale(chartConfig).numberFormat(',.2f')",
+           "tooltipHeaderFormatter":"",
+           "tooltipValueFormatter":"",
+           "xLabelDistance": 35,
+           "yLabelDistance": -5,
+           "xShowMaxMin": false,
+           "yShowMaxMin": false,
+           "duration": 300,
+           "useInteractiveGuideline": true,
+           "xTicksThreshold": 20,
+           "legendPosition": "top",
+           "clickEventHandler":""
+       },
+       "childChart": null
+   },
+ 
+ 
+ 
+    {
+       "id" : "AvgRunningTimeForAllRunningProcesses",
+       "name" : "Average Running Time For All Running Processes",
+       "desc" : "Average running time (In Hour) for all running processes started within the time period. For example, time period of 1 day means processes started within past 24 hours and still running.",
+       "esIndex" : "/Analytics/pi",
+       "esQuery": {
+  "size": 0,
+  "aggs": {
+    "1": {
+      "avg": {
+        "field": "ProcessLeadTime",
+        "script": {
+          "inline": "doc['ProcessLeadTime'].value/(3600*1000)",
+          "lang": "painless"
+        }
+      }
+    }
+  },
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "analyze_wildcard": true,
+            "query": "[[query]]"
+          }
+        },
+        {
+          "match_phrase": {
+            "ProcessState": {
+              "query": "Running"
+            }
+          }
+        },
+        {
+          "range": {
+            "ProcessCreationTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "_source": {
+    "excludes": []
+  }
+},
+       "chartPath": "#chart svg",
+       "chartType": "gauge",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc":"var convertToGaugeChartData = function(data) {\n        var chartData = [];\n        var value = null;\n       if(data.hasOwnProperty(\"aggregations\")) {\n              value =  data.aggregations[\"1\"].value;\n       } else {\n              value = data.hits.total;\n      } \n        chartData.push(value);\n        return chartData;\n}\nconvertToGaugeChartData(chartConfig.esData)",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "margin": {},
+           "color": "nv.utils.getColor(['#88ac67', '#f78f20', '#db4e4e'])",
+           "titlePosition": {},
+           "title": "Lead Time",
+           "min": 0,
+           "max": "chartConfig.esData.aggregations[\"1\"].value * 3",
+           "zoneLimit1": 0.5,
+           "zoneLimit2": 0.8,
+           "showMinMaxLabels": true,
+           "valueFormatter": "",
+           "chartClickEventHandler": ""
+       },
+       "childChart": null
+   },
+ 
+ 
+ 
+    {
+       "id" : "ClosedProcessCompletionTime",
+       "name" : "Closed Process Completion Lead Time",
+       "desc" : "Duration of closed processes started within the specified time period sorted by duration in descending order.",
+       "esIndex" : "/Analytics/pi",
+       "esQuery": {
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "analyze_wildcard": true,
+            "query": "[[query]]"
+          }
+        },
+        {
+          "match_phrase": {
+            "ProcessState": {
+              "query": "Closed"
+            }
+          }
+        },
+        {
+          "range": {
+            "ProcessCreationTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "ProcessName",
+        "size": 10000,
+        "order": {
+          "1": "desc"
+        }
+      },
+      "aggs": {
+        "1": {
+          "avg": {
+            "field": "ProcessLeadTime",
+            "script": {
+              "inline": "doc['ProcessLeadTime'].value/(3600*1000)",
+              "lang": "painless"
+            }
+          }
+        }
+      }
+    }
+  }
+},
+       "chartPath": "#chart svg",
+       "chartType": "line",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc": "var convertToLineChartData = function(data) {\n        var chartData = [];\n        var xtickLabels = [];\n        var slice = {\"key\":\"\",\"values\":[],\"xtickLabels\":xtickLabels};\n        var buckets = data.aggregations[\"2\"].buckets;\n        var _xTickFormat = function(d) {\n            return xtickLabels[d];\n        }\n        chartData.push(slice);\n        for(var i=0; i < buckets.length; i++) {\n            var bucket = buckets[i];\n            var xval = bucket.key;\n            var yval = null;\n            if(bucket.hasOwnProperty(\"1\")) {\n                  yval =  parseFloat(bucket[\"1\"].value);\n            } else {\n                  yval = parseInt(bucket[\"doc_count\"]);\n           }\n            xtickLabels.push(xval);\n            slice.values.push({\"x\": xtickLabels.indexOf(xval),\"y\":yval});\n        }\n        return chartData;\n}\n\nconvertToLineChartData(chartConfig.esData);",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {"bottom": 100},
+           "color": "nv.utils.defaultColor()",
+           "showLegend": false,
+           "showXAxis": true,
+           "showYAxis": true,
+           "xLabel": "Process Names",
+           "yLabel": "Process Lead Time (Hour)",
+           "xRotateLabels": 45,
+           "xFormatter": "(function(d) { return chartConfig.chartData[0].xtickLabels[d]; })",
+           "yFormatter": "getD3Locale(chartConfig).numberFormat(',.2f')",
+           "tooltipHeaderFormatter":"",
+           "tooltipValueFormatter":"",
+           "xLabelDistance": 35,
+           "yLabelDistance": -5,
+           "xShowMaxMin": false,
+           "yShowMaxMin": false,
+           "duration": 300,
+           "useInteractiveGuideline": true,
+           "xTicksThreshold": 20,
+           "legendPosition": "top",
+           "clickEventHandler":""
+       },
+       "childChart": null
+   },
+ 
+
+
+    {
+       "id": "DailyClosedProcessReport",
+       "name" : "Number Of Closed Processes By Day",
+       "desc" : "Number of daily closed processes within specified time period.",
+       "esIndex" : "/Analytics/daily",
+       "esQuery": {
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "query": "[[query]]",
+            "analyze_wildcard": true
+          }
+        },
+        {
+          "range": {
+            "CountTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "CountTime",
+        "size": 10000,
+        "order": {
+          "_term": "asc"
+        }
+      },
+      "aggs": {
+        "1": {
+          "avg": {
+            "field": "ClosedProcessCount"
+          }
+        }
+      }
+    }
+  }
+},
+       "chartPath": "#chart svg",
+       "chartType": "bar",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc": "var convertToBarChartData = function(data) {\n        var chartData = [{\"key\":\"\",\"values\":[]}];\n        var buckets = data.aggregations[\"2\"].buckets;\n        for(var i=0; i < buckets.length; i++) {\n            var label = buckets[i].key;\n            var value = null;\n            if(buckets[i].hasOwnProperty(\"1\")) {\n                value = buckets[i][\"1\"].value;\n            } else {\n                value = buckets[i][\"doc_count\"];\n            }\n            chartData[0].values.push({\"label\":label,\"value\":value});\n        }\n        return chartData;\n}\nconvertToBarChartData(chartConfig.esData);",
+       "drawFunc":  "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {"bottom": 100},
+           "color": "nv.utils.getColor()",
+           "showLegend": false,
+           "showXAxis": true,
+           "showYAxis": true,
+           "xLabel": "Report Time",
+           "yLabel": "Daily Closed Process Count",
+           "xRotateLabels": 90,
+           "xFormatter": "(function (d) {return getD3Locale(chartConfig).timeFormat('%x')(new Date(d))})",
+           "yFormatter": "getD3Locale(chartConfig).numberFormat(',.')",
+           "tooltipKeyFormatter":"",
+           "tooltipValueFormatter":"",
+           "xLabelDistance": 15,
+           "yLabelDistance": -5,
+           "xShowMaxMin": false,
+           "yShowMaxMin": true,
+           "xTicksThreshold": 20,
+           "duration": 300,
+           "staggerLabels": false,
+           "wrapLabels": false,
+           "valueFormatter": "getD3Locale(chartConfig).numberFormat(',.')",
+           "dblClickEventHandler": "",
+           "barColor": "blue",
+           "showValues": false
+       },
+       "childChart": null
+   },
+
+
+
+ 
+ 
+    {
+       "id": "DailyRunningProcessReport",
+       "name" : "Number Of Running Processes By Day",
+       "desc" : "Number of daily running processes within specified time period.",
+       "esIndex" : "/Analytics/daily",
+       "esQuery": {
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "query": "[[query]]",
+            "analyze_wildcard": true
+          }
+        },
+        {
+          "range": {
+            "CountTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "CountTime",
+        "size": 10000,
+        "order": {
+          "_term": "asc"
+        }
+      },
+      "aggs": {
+        "1": {
+          "avg": {
+            "field": "RunningProcessCount"
+          }
+        }
+      }
+    }
+  }
+},
+       "chartPath": "#chart svg",
+       "chartType": "bar",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc": "var convertToBarChartData = function(data) {\n        var chartData = [{\"key\":\"\",\"values\":[]}];\n        var buckets = data.aggregations[\"2\"].buckets;\n        for(var i=0; i < buckets.length; i++) {\n            var label = buckets[i].key;\n            var value = null;\n            if(buckets[i].hasOwnProperty(\"1\")) {\n                value = buckets[i][\"1\"].value;\n            } else {\n                value = buckets[i][\"doc_count\"];\n            }\n            chartData[0].values.push({\"label\":label,\"value\":value});\n        }\n        return chartData;\n}\nconvertToBarChartData(chartConfig.esData);",
+       "drawFunc":  "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {"bottom": 100},
+           "color": "nv.utils.getColor()",
+           "showLegend": false,
+           "showXAxis": true,
+           "showYAxis": true,
+           "xLabel": "Report Time",
+           "yLabel": "Daily Running Process Count",
+           "xRotateLabels": 90,
+           "xFormatter": "(function (d) {return getD3Locale(chartConfig).timeFormat('%x')(new Date(d))})",
+           "yFormatter": "getD3Locale(chartConfig).numberFormat(',.')",
+           "tooltipKeyFormatter":"",
+           "tooltipValueFormatter":"",
+           "xLabelDistance": 15,
+           "yLabelDistance": -5,
+           "xShowMaxMin": false,
+           "yShowMaxMin": true,
+           "xTicksThreshold": 20,
+           "duration": 300,
+           "staggerLabels": false,
+           "wrapLabels": false,
+           "valueFormatter": "getD3Locale(chartConfig).numberFormat(',.')",
+           "dblClickEventHandler": "",
+           "barColor": "blue",
+           "showValues": false
+       },
+       "childChart": null
+   },
+   
+   
+   
+   
+    {
+       "id" : "DailyRunningandClosedProcessCount",
+       "name" : "Opened and Closed Processes By Day",
+       "desc" : "Daily open and close processes counts in a specified time period.",
+       "esIndex" : "/Analytics/daily",
+       "esQuery": {
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "analyze_wildcard": true,
+            "query": "[[query]]"
+          }
+        },
+        {
+          "range": {
+            "CountTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "3": {
+      "terms": {
+        "field": "CountTime",
+        "size": 10000,
+        "order": {
+          "_term": "asc"
+        }
+      },
+      "aggs": {
+        "Running": {
+          "avg": {
+            "field": "RunningProcessCount"
+          }
+        },
+        "Closed": {
+          "avg": {
+            "field": "ClosedProcessCount"
+          }
+        }
+      }
+    }
+  }
+},
+       "chartPath": "#chart svg",
+       "chartType": "bubble",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc": "var convertToBubbleChartData = function(data) {\n        var chartData = [];\n        var buckets = data.aggregations[\"3\"].buckets;\n        var _getSliceData = function(chartData, bkey) {\t\n            var slice = null;\n            for(var i=0; i < chartData.length; i++) {\n                slice = chartData[i];\n                if(slice.key == bkey) {\n                    return slice;\n                }\n            }\n            slice = {\"key\":bkey,\"values\":[]};\n            chartData.push(slice);\n            return slice;\n        }\n        for(var i=0; i < buckets.length; i++) {\n            var bucket = buckets[i];\n            var BKEY = bucket.key;\n            for(var p in bucket) {\n                if(bucket.hasOwnProperty(p) && p != 'key' && p!='key_as_string' && p != 'doc_count') {\n                    var value = parseFloat(bucket[p].value);\n                    var slice = _getSliceData(chartData, getLocalizedChartLabel(chartConfig,p));\n                    slice.values.push({\"x\":BKEY, \"y\":value, \"size\": value});\n                }\n            }\n        }\n        \n        return chartData;\n}\nconvertToBubbleChartData(chartConfig.esData);",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {"bottom": 100},
+           "color": "d3.scale.category10().range()",
+           "showLegend": true,
+           "showLabels": true,
+           "showXAxis": true,
+           "showYAxis": true,
+           "xLabel": "Day",
+           "yLabel": "Process Count",
+           "xRotateLabels": 90,
+           "xFormatter": "(function (d) {return getD3Locale(chartConfig).timeFormat('%x')(new Date(d))})",
+           "yFormatter": "getD3Locale(chartConfig).numberFormat(',.')",
+           "tooltipHeaderFormatter":"",
+           "tooltipValueFormatter":"",
+           "showDistX": false,
+           "showDistY": false,
+           "xLabelDistance": 35,
+           "yLabelDistance": -5,
+           "xShowMaxMin": false,
+           "yShowMaxMin": false,
+           "duration": 300,
+           "clickEventHandler": ""
+       },
+       "childChart": null
+   },
+   
+   
+ 
+ 
+    {
+       "id" : "FinishedTasksFromEachPerson",
+       "name" : "Number of Finished Tasks From Each Person",
+       "desc" : "Number of Finished Tasks From Each Person in a specified time period sorted by task count in descending order.",
+       "esIndex" : "/Analytics/hist",
+       "esQuery": {
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "Responsible",
+        "exclude": "__process",
+        "size": 10000,
+        "order": {
+          "_count": "desc"
+        }
+      },
+      "aggs": {
+        "3": {
+          "terms": {
+            "field": "ConActivityName",
+            "size": 1000,
+            "order": {
+              "_count": "desc"
+            }
+          }
+        }
+      }
+    }
+  },
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "query": "EventCodeInt:2 AND [[query]]",
+            "analyze_wildcard": true
+          }
+        },
+        {
+          "range": {
+            "CreatedTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  }
+},
+       "chartPath":  "#chart svg",
+       "chartType": "stackbar",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc": "var convertToStackBarChartData = function(data) {\n        var chartData = [];\n        var buckets = data.aggregations[\"2\"].buckets;\n        var _getSliceData = function(chartData, sbkey) {\n            var slice = null;\n            for(var i=0; i < chartData.length; i++) {\n                slice = chartData[i];\n                if(slice.key == sbkey) {\n                    return slice;\n                }\n            }\n            slice = {\"key\":sbkey, \"values\":[]};\n            chartData.push(slice);\n            return slice;\n        }\n        \n        for(var i=0; i < buckets.length; i++) {\n            var bucket = buckets[i];\n            var BKEY = bucket.key;\n            var subBuckets = bucket[\"3\"].buckets;\n            for(var k=0; k < subBuckets.length; k++) {\n                var subBucket = subBuckets[k];\n                var SBKEY = null;\n                var VAL = null;\n               if(subBucket.hasOwnProperty(\"key_as_string\")) {\n                       SBKEY = subBucket.key_as_string;\n               } else {\n                      SBKEY = subBucket.key;\n               }\n               if(subBucket.hasOwnProperty(\"1\")) {\n                      VAL = parseFloat(subBucket[\"1\"].value);\n               } else {\n                      VAL = parseFloat(subBucket[\"doc_count\"]);\n               }\n                var slice = _getSliceData(chartData, SBKEY);\n                var ele = {\"y\":VAL,\"x\":BKEY};\n                slice.values.push(ele);\n            }\n        }\n        for(var j=0; j < chartData.length; j++) {\n            var slice = chartData[j];\n            for(var k=0; k < buckets.length; k++) {\n                var bkey = buckets[k].key;\n                var found = false;\n                for(var m=0; m < slice.values.length; m++) {\n                    if(slice.values[m].x == bkey) {\n                        found = true;\n                        break;\n                    }\n                }\n                if(!found) {\n                    slice.values.push({\"y\":0,\"x\":bkey});\n                }\n            }\n\n            slice.values.sort(function(obj1, obj2) {\n                if(typeof obj1.x === \"string\" && typeof obj2.x === \"string\") {\n                    var A = obj1.x.toLowerCase();\n                    var B = obj2.x.toLowerCase();\n                    if(A < B) {\n                        return -1;\n                    } else if (A > B) {\n                        return  1;\n                    } else{\n                        return 0;\n                    }\n                } else {\n                    return obj1.x - obj2.x;\n                }\n            });\n\n        }\n         \n        return chartData;\n}\nconvertToStackBarChartData(chartConfig.esData);",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {"bottom": 80},
+           "color": "nv.utils.defaultColor()",
+           "showControls": true,
+           "showLegend": true,
+           "showXAxis": true,
+           "showYAxis": true,
+           "xLabel": "Completed By",
+           "yLabel": "Number of Finished Tasks",
+           "xRotateLabels": 0,
+           "xFormatter": "(function (d) {return d})",
+           "yFormatter": "getD3Locale(chartConfig).numberFormat(',.')",
+           "tooltipHeaderFormatter":"",
+           "tooltipValueFormatter":"",
+           "xLabelDistance": 15,
+           "yLabelDistance": -5,
+           "xShowMaxMin": false,
+           "yShowMaxMin": true,
+           "duration": 300,
+           "reduceXTicks": false,
+           "staggerLabels": false,
+           "groupSpacing": 0.1,
+           "useInteractiveGuideline": true,
+           "legendPosition": "top",
+           "dblClickEventHandler":""
+       },
+       "childChart": null
+   },
+ 
+ 
+ 
+    {
+       "id" : "HourlyOpenedClosedProcessCount",
+       "name" : "Opened and Closed Processes By Hour",
+       "desc" : "Hourly opened and closed processes counts in a specified time period.",
+       "esIndex" : "/Analytics/pc",
+       "esQuery": {
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "query": "[[query]]",
+            "analyze_wildcard": true
+          }
+        },
+        {
+          "range": {
+            "CountTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "3": {
+      "terms": {
+        "field": "CountTime",
+        "size": 10000,
+        "order": {
+          "_term": "asc"
+        }
+      },
+      "aggs": {
+        "Opened": {
+          "sum": {
+            "field": "OpenedProcessCount"
+          }
+        },
+        "Closed": {
+          "sum": {
+            "field": "ClosedProcessCount"
+          }
+        }
+      }
+    }
+  }
+},
+       "chartPath": "#chart svg",
+       "chartType": "bubble",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc": "var convertToBubbleChartData = function(data) {\n        var chartData = [];\n        var buckets = data.aggregations[\"3\"].buckets;\n        var _getSliceData = function(chartData, bkey) {\t\n            var slice = null;\n            for(var i=0; i < chartData.length; i++) {\n                slice = chartData[i];\n                if(slice.key == bkey) {\n                    return slice;\n                }\n            }\n            slice = {\"key\":bkey,\"values\":[]};\n            chartData.push(slice);\n            return slice;\n        }\n        for(var i=0; i < buckets.length; i++) {\n            var bucket = buckets[i];\n            var BKEY = bucket.key;\n            for(var p in bucket) {\n                if(bucket.hasOwnProperty(p) && p != 'key' && p!='key_as_string' && p != 'doc_count') {\n                    var value = parseFloat(bucket[p].value);\n                    var slice = _getSliceData(chartData, getLocalizedChartLabel(chartConfig,p));\n                    slice.values.push({\"x\":BKEY, \"y\":value, \"size\": value});\n                }\n            }\n        }\n        \n        return chartData;\n}\nconvertToBubbleChartData(chartConfig.esData);",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {"bottom": 140},
+           "color": "d3.scale.category10().range()",
+           "showLegend": true,
+           "showLabels": true,
+           "showXAxis": true,
+           "showYAxis": true,
+           "xLabel": "Hour",
+           "yLabel": "Process Count",
+           "xRotateLabels": 90,
+           "xFormatter": "(function (d) {return getD3Locale(chartConfig).timeFormat('%x %H:00:00')(new Date(d))})",
+           "yFormatter": "getD3Locale(chartConfig).numberFormat(',.')",
+           "tooltipHeaderFormatter":"",
+           "tooltipValueFormatter":"",
+           "showDistX": false,
+           "showDistY": false,
+           "xLabelDistance": 35,
+           "yLabelDistance": -5,
+           "xShowMaxMin": false,
+           "yShowMaxMin": false,
+           "duration": 300,
+           "clickEventHandler": ""
+       },
+       "childChart": null
+   },
+   
+ 
+ 
+ 
+     {
+       "id": "HourlyOpenedProcessCountChart",
+       "name" : "Opened Processes By Hour",
+       "desc" : "Hourly opened processes counts in a specified time period.",
+       "esIndex" : "/Analytics/pc",
+       "esQuery": {
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "analyze_wildcard": true,
+            "query": "[[query]]"
+          }
+        },
+        {
+          "range": {
+            "CountTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "CountTime",
+        "size": 10000,
+        "order": {
+          "_term": "asc"
+        }
+      },
+      "aggs": {
+        "1": {
+          "avg": {
+            "field": "OpenedProcessCount"
+          }
+        }
+      }
+    }
+  }
+},
+       "chartPath": "#chart svg",
+       "chartType": "bar",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc": "var convertToBarChartData = function(data) {\n        var chartData = [{\"key\":\"\",\"values\":[]}];\n        var buckets = data.aggregations[\"2\"].buckets;\n        for(var i=0; i < buckets.length; i++) {\n            var label = buckets[i].key;\n            var value = null;\n            if(buckets[i].hasOwnProperty(\"1\")) {\n                value = buckets[i][\"1\"].value;\n            } else {\n                value = buckets[i][\"doc_count\"];\n            }\n            chartData[0].values.push({\"label\":label,\"value\":value});\n        }\n        return chartData;\n}\nconvertToBarChartData(chartConfig.esData);",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {"bottom": 140},
+           "color": "nv.utils.getColor()",
+           "showLegend": false,
+           "showXAxis": true,
+           "showYAxis": true,
+           "xLabel": "Hour",
+           "yLabel": "Process Count",
+           "xRotateLabels": 90,
+           "xFormatter": "(function (d) {return getD3Locale(chartConfig).timeFormat('%x %H:00:00')(new Date(d))})",
+           "yFormatter": "getD3Locale(chartConfig).numberFormat(',.')",
+           "tooltipKeyFormatter":"",
+           "tooltipValueFormatter":"",
+           "xLabelDistance": 35,
+           "yLabelDistance": -5,
+           "xShowMaxMin": false,
+           "yShowMaxMin": true,
+           "xTicksThreshold": 20,
+           "duration": 300,
+           "staggerLabels": false,
+           "wrapLabels": false,
+           "valueFormatter": "getD3Locale(chartConfig).numberFormat(',.')",
+           "dblClickEventHandler": "",
+           "barColor": "blue",
+           "showValues": false
+       },
+       "childChart": null
+   },
+ 
+ 
+ 
+       {
+       "id" : "LineChartActivityProcessingTime",
+       "name" : "Open And Closed Activities Running Time",
+       "desc" : "Total of duration (In Hours) of open and closed activities started within the specified time period sorted by sum of duration in ascending order.",
+       "esIndex" : "/Analytics/ai",
+       "esQuery": {
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "query": "[[query]]",
+            "analyze_wildcard": true
+          }
+        },
+        {
+          "range": {
+            "ActivityCreationTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "ActivityName",
+        "exclude": "Start",
+        "size": 1000,
+        "order": {
+          "1": "asc"
+        }
+      },
+      "aggs": {
+        "1": {
+          "sum": {
+            "field": "ActivityLeadTime",
+            "script": {
+              "inline": "doc['ActivityLeadTime'].value/(3600*1000)",
+              "lang": "painless"
+            }
+          }
+        }
+      }
+    }
+  }
+},
+       "chartPath": "#chart svg",
+       "chartType": "line",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc": "var convertToLineChartData = function(data) {\n        var chartData = [];\n        var xtickLabels = [];\n        var slice = {\"key\":\"\",\"values\":[],\"xtickLabels\":xtickLabels};\n        var buckets = data.aggregations[\"2\"].buckets;\n        var _xTickFormat = function(d) {\n            return xtickLabels[d];\n        }\n        chartData.push(slice);\n        for(var i=0; i < buckets.length; i++) {\n            var bucket = buckets[i];\n            var xval = bucket.key;\n            var yval = null;\n            if(bucket.hasOwnProperty(\"1\")) {\n                  yval =  parseFloat(bucket[\"1\"].value);\n            } else {\n                  yval = parseInt(bucket[\"doc_count\"]);\n           }\n            xtickLabels.push(xval);\n            slice.values.push({\"x\": xtickLabels.indexOf(xval),\"y\":yval});\n        }\n        return chartData;\n}\n\nconvertToLineChartData(chartConfig.esData);",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {"left":80, "bottom": 100},
+           "color": "nv.utils.defaultColor()",
+           "showLegend": false,
+           "showXAxis": true,
+           "showYAxis": true,
+           "xLabel": "Activity Name",
+           "yLabel": "Lead Time (Hour)",
+           "xRotateLabels": 45,
+           "xFormatter": "(function(d) { return chartConfig.chartData[0].xtickLabels[d]; })",
+           "yFormatter": "getD3Locale(chartConfig).numberFormat(',.2f')",
+           "tooltipHeaderFormatter":"",
+           "tooltipValueFormatter":"",
+           "xLabelDistance": 35,
+           "yLabelDistance": 15,
+           "xShowMaxMin": false,
+           "yShowMaxMin": false,
+           "duration": 300,
+           "useInteractiveGuideline": true,
+           "xTicksThreshold": 20,
+           "legendPosition": "top",
+           "clickEventHandler":""
+       },
+       "childChart": null
+   },
+ 
+ 
+   
+   
+     {
+       "id" : "NumberOfRunningActivitiesEachPersonOwns",
+       "name" : "Number of Running Tasks Each Person Owns",
+       "desc" : "Number of running tasks created in a specified time period and owned by each person sorted by person (ascending order) and task count (descending order).",
+       "esIndex" : "/Analytics/wi",
+       "esQuery": {
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "query": "[[query]]",
+            "analyze_wildcard": true
+          }
+        },
+        {
+          "range": {
+            "WorkItemCreationTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "WorkItemResponsible",
+        "size": 10000,
+        "order": {
+          "_term": "asc"
+        }
+      },
+      "aggs": {
+        "3": {
+          "terms": {
+            "field": "ActivityName",
+            "size": 10000,
+            "order": {
+              "_count": "desc"
+            }
+          }
+        }
+      }
+    }
+  }
+},
+       "chartPath":  "#chart svg",
+       "chartType": "stackbar",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc": "var convertToStackBarChartData = function(data) {\n        var chartData = [];\n        var buckets = data.aggregations[\"2\"].buckets;\n        var _getSliceData = function(chartData, sbkey) {\n            var slice = null;\n            for(var i=0; i < chartData.length; i++) {\n                slice = chartData[i];\n                if(slice.key == sbkey) {\n                    return slice;\n                }\n            }\n            slice = {\"key\":sbkey, \"values\":[]};\n            chartData.push(slice);\n            return slice;\n        }\n        \n        for(var i=0; i < buckets.length; i++) {\n            var bucket = buckets[i];\n            var BKEY = bucket.key;\n            var subBuckets = bucket[\"3\"].buckets;\n            for(var k=0; k < subBuckets.length; k++) {\n                var subBucket = subBuckets[k];\n                var SBKEY = null;\n                var VAL = null;\n               if(subBucket.hasOwnProperty(\"key_as_string\")) {\n                       SBKEY = subBucket.key_as_string;\n               } else {\n                      SBKEY = subBucket.key;\n               }\n               if(subBucket.hasOwnProperty(\"1\")) {\n                      VAL = parseFloat(subBucket[\"1\"].value);\n               } else {\n                      VAL = parseFloat(subBucket[\"doc_count\"]);\n               }\n                var slice = _getSliceData(chartData, SBKEY);\n                var ele = {\"y\":VAL,\"x\":BKEY};\n                slice.values.push(ele);\n            }\n        }\n        for(var j=0; j < chartData.length; j++) {\n            var slice = chartData[j];\n            for(var k=0; k < buckets.length; k++) {\n                var bkey = buckets[k].key;\n                var found = false;\n                for(var m=0; m < slice.values.length; m++) {\n                    if(slice.values[m].x == bkey) {\n                        found = true;\n                        break;\n                    }\n                }\n                if(!found) {\n                    slice.values.push({\"y\":0,\"x\":bkey});\n                }\n            }\n\n            slice.values.sort(function(obj1, obj2) {\n                if(typeof obj1.x === \"string\" && typeof obj2.x === \"string\") {\n                    var A = obj1.x.toLowerCase();\n                    var B = obj2.x.toLowerCase();\n                    if(A < B) {\n                        return -1;\n                    } else if (A > B) {\n                        return  1;\n                    } else{\n                        return 0;\n                    }\n                } else {\n                    return obj1.x - obj2.x;\n                }\n            });\n\n        }\n         \n        return chartData;\n}\nconvertToStackBarChartData(chartConfig.esData);",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {"bottom": 130},
+           "color": "nv.utils.defaultColor()",
+           "showControls": true,
+           "showLegend": true,
+           "showXAxis": true,
+           "showYAxis": true,
+           "xLabel": "Task Responsible User",
+           "yLabel": "Number of Tasks",
+           "xRotateLabels": 45,
+           "xFormatter": "(function (d) {return d})",
+           "yFormatter": "getD3Locale(chartConfig).numberFormat(',.')",
+           "tooltipHeaderFormatter":"",
+           "tooltipValueFormatter":"",
+           "xLabelDistance": 35,
+           "yLabelDistance": -5,
+           "xShowMaxMin": false,
+           "yShowMaxMin": true,
+           "duration": 300,
+           "reduceXTicks": false,
+           "staggerLabels": false,
+           "groupSpacing": 0.1,
+           "useInteractiveGuideline": true,
+           "legendPosition": "top",
+           "dblClickEventHandler":""
+       },
+       "childChart": null
+   },  
+   
+   
+   
+   {
+       "id" : "PieActivityName",
+       "name" : "Number Of Activities By Name",
+       "desc" : "Number of started and completed activities by name within specified time period.",
+       "esIndex" : "/Analytics/ai",
+       "esQuery": {
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "query": "[[query]]",
+            "analyze_wildcard": true
+          }
+        },
+        {
+          "range": {
+            "ActivityCreationTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "ActivityName",
+        "size": 10000,
+        "order": {
+          "_count": "desc"
+        }
+      }
+    }
+  }
+},
+       "chartPath": "#chart svg",
+       "chartType": "pie",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc": "var convertToPieChartData = function(data) {\n        var chartData = [];\n        var buckets = data.aggregations[\"2\"].buckets;\n        for(var i=0; i < buckets.length; i++) {\n            var value = null;\n            if(buckets[i].hasOwnProperty(\"1\")) {\n                  value = buckets[i][\"1\"][\"value\"];\n            } else {\n                  value = buckets[i][\"doc_count\"];\n            }\n            var key = \"\";\n            if(buckets[i].hasOwnProperty(\"key_as_string\")) {\n                   key = buckets[i][\"key_as_string\"];\n            } else {\n                   key = buckets[i].key;\n            }\n            chartData.push({\"label\":key,\"value\":value});\n        }\n        return chartData;\n}\nconvertToPieChartData(chartConfig.esData);",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {},
+           "color": "nv.utils.defaultColor()",
+           "showLegend": true,
+           "showLabels": true,
+           "showTooltipPercent": true,
+           "valueFormatter": "getD3Locale(chartConfig).numberFormat(',.')",
+           "tooltipValueFormatter":"getD3Locale(chartConfig).numberFormat(',.')",
+           "duration": 300,
+           "labelsOutside": false,
+           "labelSunbeamLayout":false,
+           "legendPosition": "top",
+           "labelThreshold": 0.05,
+           "labelType": "value",
+           "dblClickEventHandler": ""
+       },
+       "childChart": null
+   },
+   
+ 
+ 
+ 
+   {
+       "id" : "PieByProcessState",
+       "name" : "Percentage by Process State",
+       "desc" : "Percentages of the state for all processes started within the specified time period. When you double click particular state, you get a chart which shows the percentage of process definitions within that state. ",
+       "esIndex" : "/Analytics/pi",
+       "esQuery": {
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "query": "[[query]]",
+            "analyze_wildcard": true
+          }
+        },
+        {
+          "range": {
+            "ProcessCreationTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "ProcessState",
+        "size": 10000,
+        "order": {
+          "_count": "desc"
+        }
+      },
+      "aggs": {
+        "3": {
+          "terms": {
+            "field": "PlanName",
+            "size": 10000,
+            "order": {
+              "_term": "desc"
+            }
+          }
+        }
+      }
+    }
+  }
+},
+       "chartPath": "#chart svg",
+       "chartType": "donut",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc": "var convertToDonutChartData = function(data) {\n        var chartData = [];\n        var buckets = data.aggregations[\"2\"].buckets;\n        for(var i=0; i < buckets.length; i++) {\n            var value = null;\n            if(buckets[i].hasOwnProperty(\"1\")) {\n                  value = buckets[i][\"1\"][\"value\"];\n            }  else {\n                  value = buckets[i][\"doc_count\"];\n           }\n           var key = \"\";\n           if(buckets[i].hasOwnProperty(\"key_as_string\")) {\n                 key = buckets[i][\"key_as_string\"];\n           } else {\n                 key = buckets[i].key;\n           }\nchartData.push({\"label\":getLocalizedChartLabel(chartConfig,key),\"value\":value,\"key\":key});\n        }\n        return chartData;\n}\nconvertToDonutChartData(chartConfig.esData);",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {},
+           "color": "nv.utils.defaultColor()",
+           "showLabels": true,
+           "showLegend": true,
+           "labelThreshold": 0.05,
+           "labelType": "value",
+           "valueFormatter": "getD3Locale(chartConfig).numberFormat(',.')",
+           "tooltipValueFormatter":"",
+           "showTooltipPercent": true,
+           "donutRatio": 0.35,
+           "duration": 300,
+           "labelsOutside": false,
+           "labelSunbeamLayout":false,
+           "legendPosition": "top",
+           "dblClickEventHandler": "var drilldownFunc = function(parentChartConfig, evt) {\n   var chartConfig = parentChartConfig.childChart;\n   chartConfig.parent = JSON.stringify(parentChartConfig);\n   chartConfig.serverConnection = parentChartConfig.serverConnection;\n   chartConfig.fromDate = parentChartConfig.fromDate;\n   chartConfig.toDate = parentChartConfig.toDate;\n   chartConfig.chartPath = parentChartConfig.chartPath.substring(0, \n                  parentChartConfig.chartPath.indexOf(\" \")) +\n                  chartConfig.chartPath.substring(chartConfig.chartPath.indexOf(\" \"));       \n   chartConfig.query = parentChartConfig.query + ' AND ProcessState:\\\"' + evt.data.key + '\\\"';\n   chartConfig.timeZone = parentChartConfig.timeZone;\n   chartConfig.locale = parentChartConfig.locale;\n   eval(chartConfig.drawFunc);\n};\ndrilldownFunc(chartConfig,evt);"
+       },
+       "childChart": {
+            "id" : "PlanInProcessState",
+            "name" : "Percentage of Processes by Plan Name",
+            "desc" : "Percentage of process instances by Plan Name within the specified time period.",
+            "esIndex" : "/Analytics/pi",
+            "esQuery": {
+  "size": 0,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "query": "[[query]]",
+            "analyze_wildcard": true
+          }
+        },
+        {
+          "range": {
+            "ProcessCreationTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "PlanName",
+        "size": 10000,
+        "order": {
+          "_count": "desc"
+        }
+      }
+    }
+  }
+},
+            "chartPath": "#chart svg",
+            "chartType": "pie",
+            "fromDate": "now-24h",
+            "toDate": "now",
+            "query": "*",
+            "timeZone":"",
+            "serverConnection": "",
+            "dataFunc": "var convertToPieChartData = function(data) {\n        var chartData = [];\n        var buckets = data.aggregations[\"2\"].buckets;\n        for(var i=0; i < buckets.length; i++) {\n            var value = null;\n            if(buckets[i].hasOwnProperty(\"1\")) {\n                  value = buckets[i][\"1\"][\"value\"];\n            } else {\n                  value = buckets[i][\"doc_count\"];\n            }\n            var key = \"\";\n            if(buckets[i].hasOwnProperty(\"key_as_string\")) {\n                   key = buckets[i][\"key_as_string\"];\n            } else {\n                   key = buckets[i].key;\n            }\n            chartData.push({\"label\":key,\"value\":value});\n        }\n        return chartData;\n}\nconvertToPieChartData(chartConfig.esData);",
+            "drawFunc": "drawChart(chartConfig);",
+            "locale": "en",
+            "nvd3Version": "v1.8.6",
+            "chartVersion": "v1.0",
+            "ui": {
+                "height": "",
+                "width": "",
+                "titlePosition": {},
+                "margin": {},
+                "color": "nv.utils.defaultColor()",
+                "showLegend": true,
+                "showLabels": true,
+                "showTooltipPercent": true,
+                "valueFormatter": "getD3Locale(chartConfig).numberFormat(',.')",
+                "tooltipValueFormatter":"getD3Locale(chartConfig).numberFormat(',.')",
+                "duration": 300,
+                "labelsOutside": false,
+                "labelSunbeamLayout":false,
+                "legendPosition": "top",
+                "labelThreshold": 0.05,
+                "labelType": "value",
+                "dblClickEventHandler": ""
+            },
+            "childChart":null
+       }
+   },
+   
+    
+    
+      {
+       "id" : "PlanInProcessState",
+       "name" : "Percentage of Processes by Plan Name",
+       "desc" : "Percentage of process instances by Plan Name within the specified time period.",
+       "esIndex" : "/Analytics/pi",
+       "esQuery": {
+  "size": 0,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "query": "[[query]]",
+            "analyze_wildcard": true
+          }
+        },
+        {
+          "range": {
+            "ProcessCreationTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "PlanName",
+        "size": 10000,
+        "order": {
+          "_count": "desc"
+        }
+      }
+    }
+  }
+},
+       "chartPath": "#chart svg",
+       "chartType": "pie",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc": "var convertToPieChartData = function(data) {\n        var chartData = [];\n        var buckets = data.aggregations[\"2\"].buckets;\n        for(var i=0; i < buckets.length; i++) {\n            var value = null;\n            if(buckets[i].hasOwnProperty(\"1\")) {\n                  value = buckets[i][\"1\"][\"value\"];\n            } else {\n                  value = buckets[i][\"doc_count\"];\n            }\n            var key = \"\";\n            if(buckets[i].hasOwnProperty(\"key_as_string\")) {\n                   key = buckets[i][\"key_as_string\"];\n            } else {\n                   key = buckets[i].key;\n            }\n            chartData.push({\"label\":key,\"value\":value});\n        }\n        return chartData;\n}\nconvertToPieChartData(chartConfig.esData);",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {},
+           "color": "nv.utils.defaultColor()",
+           "showLegend": true,
+           "showLabels": true,
+           "showTooltipPercent": true,
+           "valueFormatter": "getD3Locale(chartConfig).numberFormat(',.')",
+           "tooltipValueFormatter":"getD3Locale(chartConfig).numberFormat(',.')",
+           "duration": 300,
+           "labelsOutside": false,
+           "labelSunbeamLayout":false,
+           "legendPosition": "top",
+           "labelThreshold": 0.05,
+           "labelType": "value",
+           "dblClickEventHandler": ""
+       },
+       "childChart":null
+   },
+    
+
+
+      {
+       "id" : "ProcessBarRunningVsClosed",
+       "name" : "Closed And Running Processes Per Day",
+       "desc" : "Number of running and closed processes created in a specified time period sorted by process count (descending order).",
+       "esIndex" : "/Analytics/pi",
+       "esQuery": {
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "query": "[[query]]",
+            "analyze_wildcard": true
+          }
+        },
+        {
+          "range": {
+            "ProcessCreationTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "2": {
+      "date_histogram": {
+        "field": "ProcessCreationTime",
+        "interval": "1d",
+        "time_zone": "[[time_zone]]",
+        "min_doc_count": 1
+      },
+      "aggs": {
+        "3": {
+          "terms": {
+            "field": "ProcessState",
+            "include": "Running|Closed",
+            "size": 10000,
+            "order": {
+              "_term": "desc"
+            }
+          },
+          "aggs": {
+            "4": {
+              "terms": {
+                "field": "ProcessName",
+                "size": 10000,
+                "order": {
+                  "_count": "desc"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+},
+       "chartPath": "#chart svg",
+       "chartType": "multi_chart",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc": "var convertToMultiChartData = function(data,streamType1,streamType2) {\n      var yAxes = [];\n      var xValues = [];\n      var chartData = [];\n      var getYAxisIndex = function(yAxisKey) {\n          for(var p=0; p < yAxes.length; p++) {\n              if(yAxes[p].key == yAxisKey) {\n                  return yAxes[p].idx;\n              }\n          }\n          return null;\n      }\n      var buckets = data.aggregations[\"2\"].buckets;\n      var _getSliceData = function(chartData, skey, sbkey) {\n          var slice = null;\n          var selectedYAxis = getYAxisIndex(sbkey);\n          if(selectedYAxis == null) {\n              yAxes.push({\"key\":sbkey, \"idx\":yAxes.length+1});\n          }\n          \n          for(var i=0; i < chartData.length; i++) {\n              slice = chartData[i];\n              if(slice.key == skey && slice.yAxis == getYAxisIndex(sbkey)) {\n                  return slice;\n              }\n          }\n\n          slice = {\"key\":skey, \"type\":getYAxisIndex(sbkey)%2!=0 ? streamType1 : streamType2, \"yAxis\":getYAxisIndex(sbkey), \"values\":[], \"xValues\":xValues};\n          chartData.push(slice);\n          return slice;\n      }\n      \n      for(var i=0; i < buckets.length; i++) {\n          var bucket = buckets[i];\n          var bkey = bucket.key;\n          for(var k=0; k < bucket[\"3\"].buckets.length; k++) {\n              var subBucket = bucket[\"3\"].buckets[k];\n              for(var p=0; p < subBucket[\"4\"].buckets.length; p++) {\n                  var skey = subBucket[\"4\"].buckets[p].key;\n                  var sval = null;\n                  if(subBucket[\"4\"].buckets[p].hasOwnProperty(\"1\")) {\n                         sval = subBucket[\"4\"].buckets[p][\"1\"][\"value\"];\n                  } else {\n                         sval = subBucket[\"4\"].buckets[p][\"doc_count\"];\n                  }\n                  var slice = _getSliceData(chartData, skey, subBucket[\"key\"]);\n                  if(xValues.indexOf(bkey) < 0) {\n                     xValues.push(bkey);\n                  }\n\t\t\t\t  var ele = {\"y\":sval,\"x\":xValues.indexOf(bkey)};\n                  slice.values.push(ele);\n              }\n          }\n      }\n      \n      for(var j=0; j < chartData.length; j++) {\n          var slice = chartData[j];\n          \n          for(var k=0; k < xValues.length; k++) {\n              var foundIt = false;\n              for(var m=0; m < slice.values.length; m++) {\n                  if(slice.values[m].x == k) {\n                      foundIt = true;\n                      break;\n                  }\n              }\n              if(!foundIt) {\n                  slice.values.push({\"y\":0,\"x\":k});\n              }\n          }\n          \n          slice.values.sort(function(obj1, obj2) {\n              if(typeof obj1.x === \"string\" && typeof obj2.x === \"string\") {\n                  var A = obj1.x.toLowerCase();\n                  var B = obj2.x.toLowerCase();\n                  if(A < B) {\n                      return -1;\n                  } else if (A > B) {\n                      return  1;\n                  } else{\n                      return 0;\n                  }\n              } else {\n                  return obj1.x - obj2.x;\n              }\n          });\n      }\n      \n      return {\"chartData\":chartData,\"yAxes\":yAxes};\n}\nconvertToMultiChartData(chartConfig.esData,chartConfig.ui.streamType1,chartConfig.ui.streamType2);",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {"right": 50, "bottom": 100},
+           "color": "d3.scale.category10().range()",
+           "showLegend": true,
+           "xLabel": "Process Creation Time",
+           "y1Label": "",
+           "y2Label": "",
+           "xRotateLabels": 45,
+           "xFormatter": "(function(d) { \nreturn (typeof chartConfig.chartData[0].xValues[d] === \"undefined\") ? \"\" :\ngetD3Locale(chartConfig).timeFormat('%x %H:%M:%S')(new Date(chartConfig.chartData[0].xValues[d]));\n})",
+           "y1Formatter": "getD3Locale(chartConfig).numberFormat(',.')",
+           "y2Formatter": "getD3Locale(chartConfig).numberFormat(',.')",
+           "xLabelDistance": 35,
+           "y1LabelDistance": -25,
+           "y2LabelDistance": -25,
+           "xShowMaxMin": true,
+           "y1ShowMaxMin": true,
+           "y2ShowMaxMin": true,
+           "duration": 300,
+           "streamType1": "scatter",
+           "streamType2": "line",
+           "clickEventHandler":""
+       },
+       "childChart":null
+   },
+
+
+   
+
+      {
+       "id" : "RunningProcessLeadTime",
+       "name" : "All Running Process Lead Time",
+       "desc" : "Duration of running processes started within the specified time period sorted by duration in descending order.",
+       "esIndex" : "/Analytics/pi",
+       "esQuery": {
+  "size": 0,
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "ProcessName",
+        "size": 10000,
+        "order": {
+          "1": "desc"
+        }
+      },
+      "aggs": {
+        "1": {
+          "avg": {
+            "field": "ProcessLeadTime",
+            "script": {
+              "inline": "doc['ProcessLeadTime'].value/(3600*1000)",
+              "lang": "painless"
+            }
+          }
+        }
+      }
+    }
+  },
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "analyze_wildcard": true,
+            "query": "[[query]]"
+          }
+        },
+        {
+          "match_phrase": {
+            "ProcessState": {
+              "query": "Running"
+            }
+          }
+        },
+        {
+          "range": {
+            "ProcessCreationTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "_source": {
+    "excludes": []
+  }
+},
+       "chartPath": "#chart svg",
+       "chartType": "line",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc": "var convertToLineChartData = function(data) {\n        var chartData = [];\n        var xtickLabels = [];\n        var slice = {\"key\":\"\",\"values\":[],\"xtickLabels\":xtickLabels};\n        var buckets = data.aggregations[\"2\"].buckets;\n        var _xTickFormat = function(d) {\n            return xtickLabels[d];\n        }\n        chartData.push(slice);\n        for(var i=0; i < buckets.length; i++) {\n            var bucket = buckets[i];\n            var xval = bucket.key;\n            var yval = null;\n            if(bucket.hasOwnProperty(\"1\")) {\n                  yval =  parseFloat(bucket[\"1\"].value);\n            } else {\n                  yval = parseInt(bucket[\"doc_count\"]);\n           }\n            xtickLabels.push(xval);\n            slice.values.push({\"x\": xtickLabels.indexOf(xval),\"y\":yval});\n        }\n        return chartData;\n}\n\nconvertToLineChartData(chartConfig.esData);",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {"bottom": 100},
+           "color": "nv.utils.defaultColor()",
+           "showLegend": false,
+           "showXAxis": true,
+           "showYAxis": true,
+           "xLabel": "Process Name",
+           "yLabel": "Process Lead Time (Hour)",
+           "xRotateLabels": 45,
+           "xFormatter": "(function(d) { return chartConfig.chartData[0].xtickLabels[d]; })",
+           "yFormatter": "getD3Locale(chartConfig).numberFormat(',.2f')",
+           "tooltipHeaderFormatter":"",
+           "tooltipValueFormatter":"",
+           "xLabelDistance": 35,
+           "yLabelDistance": -5,
+           "xShowMaxMin": false,
+           "yShowMaxMin": false,
+           "duration": 300,
+           "useInteractiveGuideline": true,
+           "xTicksThreshold": 20,
+           "legendPosition": "top",
+           "clickEventHandler":""
+       },
+       "childChart":null
+   },
+   
+   
+   
+    {
+       "id" : "TachometerForRunningProcessCount",
+       "name" : "All running processes within the time period",
+       "desc" : "The total number of all running processes started within the time period.",
+       "esIndex" : "/Analytics/pi",
+       "esQuery": {
+  "size": 0,
+  "aggs": {},
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "analyze_wildcard": true,
+            "query": "[[query]]"
+          }
+        },
+        {
+          "match_phrase": {
+            "ProcessState": {
+              "query": "Running"
+            }
+          }
+        },
+        {
+          "range": {
+            "ProcessCreationTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "_source": {
+    "excludes": []
+  }
+},
+       "chartPath": "#chart svg",
+       "chartType": "gauge",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc":"var convertToGaugeChartData = function(data) {\n        var chartData = [];\n        var value = null;\n       if(data.hasOwnProperty(\"aggregations\")) {\n              value =  data.aggregations[\"1\"].value;\n       } else {\n              value = data.hits.total;\n      } \n        chartData.push(value);\n        return chartData;\n}\nconvertToGaugeChartData(chartConfig.esData)",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "margin": {},
+           "color": "nv.utils.getColor(['#88ac67', '#f78f20', '#db4e4e'])",
+           "titlePosition": {},
+           "title": "Count",
+           "min": 0,
+           "max": "chartConfig.esData.hits.total * 3",
+           "zoneLimit1": 0.5,
+           "zoneLimit2": 0.8,
+           "showMinMaxLabels": true,
+           "valueFormatter": "(function(d) { return !d ? 0 : d; })",
+           "chartClickEventHandler": ""
+       },
+       "childChart":null
+   },
+   
+   
+   
+   
+{
+       "id" : "WorkItemLastingTime",
+       "name" : "Running Work Item Lead Time Per Person",
+       "desc" : "Duration of running work items created within the specified time period sorted by responsible peron (ascending order) and duration (descending order).",
+       "esIndex" : "/Analytics/wi",
+       "esQuery": {
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "query_string": {
+            "query": "[[query]]",
+            "analyze_wildcard": true
+          }
+        },
+        {
+          "range": {
+            "WorkItemCreationTime": {
+              "gte": "[[begin_time]]",
+              "lte": "[[end_time]]"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "WorkItemResponsible",
+        "size": 10000,
+        "order": {
+          "1": "asc"
+        }
+      },
+      "aggs": {
+        "1": {
+          "sum": {
+            "field": "WorkItemLeadingTime",
+            "script": {
+              "inline": "doc['WorkItemLeadingTime'].value/(3600*1000)",
+              "lang": "painless"
+            }
+          }
+        },
+        "3": {
+          "terms": {
+            "field": "ActivityName",
+            "size": 10000,
+            "order": {
+              "1": "desc"
+            }
+          },
+          "aggs": {
+            "1": {
+              "sum": {
+                "field": "WorkItemLeadingTime",
+                "script": {
+                  "inline": "doc['WorkItemLeadingTime'].value/(3600*1000)",
+                  "lang": "painless"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+},
+       "chartPath":  "#chart svg",
+       "chartType": "stackbar",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc": "var convertToStackBarChartData = function(data) {\n        var chartData = [];\n        var buckets = data.aggregations[\"2\"].buckets;\n        var _getSliceData = function(chartData, sbkey) {\n            var slice = null;\n            for(var i=0; i < chartData.length; i++) {\n                slice = chartData[i];\n                if(slice.key == sbkey) {\n                    return slice;\n                }\n            }\n            slice = {\"key\":sbkey, \"values\":[]};\n            chartData.push(slice);\n            return slice;\n        }\n        \n        for(var i=0; i < buckets.length; i++) {\n            var bucket = buckets[i];\n            var BKEY = bucket.key;\n            var subBuckets = bucket[\"3\"].buckets;\n            for(var k=0; k < subBuckets.length; k++) {\n                var subBucket = subBuckets[k];\n                var SBKEY = null;\n                var VAL = null;\n               if(subBucket.hasOwnProperty(\"key_as_string\")) {\n                       SBKEY = subBucket.key_as_string;\n               } else {\n                      SBKEY = subBucket.key;\n               }\n               if(subBucket.hasOwnProperty(\"1\")) {\n                      VAL = parseFloat(subBucket[\"1\"].value);\n               } else {\n                      VAL = parseFloat(subBucket[\"doc_count\"]);\n               }\n                var slice = _getSliceData(chartData, SBKEY);\n                var ele = {\"y\":VAL,\"x\":BKEY};\n                slice.values.push(ele);\n            }\n        }\n        for(var j=0; j < chartData.length; j++) {\n            var slice = chartData[j];\n            for(var k=0; k < buckets.length; k++) {\n                var bkey = buckets[k].key;\n                var found = false;\n                for(var m=0; m < slice.values.length; m++) {\n                    if(slice.values[m].x == bkey) {\n                        found = true;\n                        break;\n                    }\n                }\n                if(!found) {\n                    slice.values.push({\"y\":0,\"x\":bkey});\n                }\n            }\n\n            slice.values.sort(function(obj1, obj2) {\n                if(typeof obj1.x === \"string\" && typeof obj2.x === \"string\") {\n                    var A = obj1.x.toLowerCase();\n                    var B = obj2.x.toLowerCase();\n                    if(A < B) {\n                        return -1;\n                    } else if (A > B) {\n                        return  1;\n                    } else{\n                        return 0;\n                    }\n                } else {\n                    return obj1.x - obj2.x;\n                }\n            });\n\n        }\n         \n        return chartData;\n}\nconvertToStackBarChartData(chartConfig.esData);",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "height": "",
+           "width": "",
+           "titlePosition": {},
+           "margin": {"left": 80,  "bottom": 130},
+           "color": "nv.utils.defaultColor()",
+           "showControls": true,
+           "showLegend": true,
+           "showXAxis": true,
+           "showYAxis": true,
+           "xLabel": "Responsible Person",
+           "yLabel": "Work Item Lead Time (hour)",
+           "xRotateLabels": 45,
+           "xFormatter": "(function(d) { return d; })",
+           "yFormatter": "getD3Locale(chartConfig).numberFormat(',.2f')",
+           "tooltipHeaderFormatter":"",
+           "tooltipValueFormatter":"",
+           "xLabelDistance": 35,
+           "yLabelDistance": 15,
+           "xShowMaxMin": false,
+           "yShowMaxMin": true,
+           "duration": 300,
+           "reduceXTicks": false,
+           "staggerLabels": false,
+           "groupSpacing": 0.1,
+           "useInteractiveGuideline": true,
+           "legendPosition": "top",
+           "dblClickEventHandler":""
+       },
+       "childChart":null
+   },
+   
+{
+       "id" : "WorkItemByPLan",
+       "name" : "Running Work Items By Plan",
+       "desc" : "Number of work items by Plan Name within the specified time period.",
+       "esIndex" : "/Analytics/wi",
+       "esQuery": {
+    "size": 0,
+    "aggs": {
+      "bucket1": {
+        "aggs": {
+          "bucket2": {
+            "aggs": {},
+            "terms": {
+              "field": "PlanId",
+              "size": 10000,
+              "order": {
+                "_term": "desc"
+              }
+            }
+          }
+        },
+        "terms": {
+          "field": "PlanName",
+          "size": 10000,
+          "order": {
+            "_term": "desc"
+          }
+        }
+      }
+    },
+    "query": {
+      "bool": {
+        "must": [
+          {
+            "query_string": {
+              "analyze_wildcard": true,
+              "query": "[[query]]"
+            }
+          },
+          {
+            "range": {
+              "WorkItemCreationTime": {
+                "gte": "[[begin_time]]",
+                "lte": "[[end_time]]"
+              }
+            }
+          }
+        ],
+        "must_not": []
+      }
+    },
+    "_source": {
+      "excludes": []
+    }
+  },
+       "chartPath":  "#chart div",
+       "chartType": "table",
+       "fromDate": "now-24h",
+       "toDate": "now",
+       "query": "*",
+       "timeZone":"",
+       "serverConnection": "",
+       "dataFunc": "var convertToTableChartData = function(data) {\n        var chartData = [];\n        var isEmpty = function(obj) {\n             for(var key in obj) {\n                  if(obj.hasOwnProperty(key)) {\n                        return false;\n                  }\n             }\n             return true;\n        }\n        if(isEmpty(data)) {\n              return chartData;\n        }\n        var buckets = data.aggregations[\"bucket1\"].buckets;\n        var isObjectWithField = function(ele, field) {\n                if(ele != null && typeof ele === \"object\") {\n                       return ele.hasOwnProperty(field);\n                } else {\n                       return false;\n                }\n        }\n        var processBuckets = function(bucketName, bucketPath, buckets) {\n                for(var i=0; i < buckets.length; i++) {\n                     var bucket = buckets[i];\n                     var subBuckets = null;\n                     var newBucketPath = JSON.parse(JSON.stringify(bucketPath));\n                     var subBucketName = \"\";\n                     for(var p in bucket) {\n                          if(isObjectWithField(bucket[p], \"buckets\")) {\n                                subBuckets = bucket[p].buckets;\n                                subBucketName = p;\n                                break;\n                          }\n                     }\n                     if(subBuckets) {\n                          newBucketPath[bucketName]=bucket.key;\n                          processBuckets(subBucketName, newBucketPath, subBuckets);\n                     } else {\n                          var rowData = JSON.parse(JSON.stringify(bucketPath));\n                          for(var p in bucket) {\n                               if(isObjectWithField(bucket[p], \"value\")) {\n                                    rowData[p] = bucket[p].value;\n                               }\n                          }\n                          rowData[\"Count\"] =  bucket.doc_count;\n                          rowData[bucketName] = bucket.key;\n                          chartData.push(rowData);\n                     }\n                }\n        }\n       \n        processBuckets(\"bucket1\", {}, buckets);\n\n        return chartData;\n}\nconvertToTableChartData(chartConfig.esData);",
+       "drawFunc": "drawChart(chartConfig);",
+       "locale": "en",
+       "nvd3Version": "v1.8.6",
+       "chartVersion": "v1.0",
+       "ui": {
+           "showTitleInTable": false,
+           "sortable": true,
+           "containerStyle": {"width":"100%"},
+           "tableStyle": {"width":"100%", "border":"2px black solid", "margin-top":"10px", "text-align": "right"},
+           "theadStyle": {},
+           "thStyle": {"border":"1px black solid", "text-align": "center"},
+           "tbodyStyle": {},
+           "trStyle": {},
+           "tdStyle": {"border":"1px black solid"},
+           "bucket1Label": "Plan Name",
+           "bucket1Formatter": "",
+           "bucket2Label": "Plan ID",
+           "bucket2Formatter": "",
+           "metric1Label": "Number of Work Items",
+           "metric1Formatter": "",
+           "metric2Label": "",
+           "metric2Formatter": "",
+           "metric3Label": "",
+           "metric3Formatter": "",
+           "dblClickEventHandler":""
+       },
+       "childChart":null
+   }
+   
+   
+ ]

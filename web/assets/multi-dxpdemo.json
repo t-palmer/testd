@@ -1,0 +1,16 @@
+{
+  "servers": [
+    {
+      "id": "Simple",
+      "url": "http://dxpdemo7:49950/aa",
+      "tenant": "Default",
+      "app": "Simple"
+    },
+    {
+      "id": "Testing",
+      "url": "http://dxpdemo7:49950/aa",
+      "tenant": "Default",
+      "app": "Testing"
+    }
+  ]
+}
